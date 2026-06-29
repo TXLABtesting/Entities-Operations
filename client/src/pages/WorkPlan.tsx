@@ -1999,10 +1999,6 @@ export default function WorkPlan() {
 
           </div>
           <div className="flex gap-1.5 sm:gap-2 flex-wrap items-center">
-            <button onClick={() => setReadinessOpen(true)} className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2.5 sm:py-2 bg-blue-600 text-white rounded-lg text-xs sm:text-xs font-bold hover:bg-blue-500 transition-all shadow-sm shadow-blue-500/20 hover:shadow-blue-500/30 active:scale-[0.97]">
-              <svg className="w-4 h-4 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
-              <span>تحقق من الجاهزية</span>
-            </button>
             <button onClick={handleSave} className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2.5 sm:py-2 bg-blue-50 border border-blue-200 text-blue-700 rounded-lg text-xs sm:text-xs font-bold hover:bg-blue-100 transition-all active:scale-[0.97]">
               <svg className="w-4 h-4 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path d="M5 13l4 4L19 7" /></svg>
               حفظ
@@ -2149,10 +2145,19 @@ export default function WorkPlan() {
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path d="M9 18l6-6-6-6" /></svg>
               السابق
             </button>
-            <div className="flex-1 text-center min-w-0">
+            <div className="flex-1 text-center min-w-0 hidden sm:block">
               <p className={`text-xs sm:text-sm font-bold truncate ${"text-slate-800"}`}>{SECTIONS[currentSection].name}</p>
               <p className={`text-[9px] sm:text-[10px] mt-0.5 ${"text-slate-500"}`}>القسم {currentSection + 1} من {SECTIONS.length}</p>
             </div>
+            {/* Readiness review — lives in the step bar, not the top toolbar */}
+            <button
+              onClick={() => setReadinessOpen(true)}
+              title="فحص جاهزية البيانات للأتمتة بالذكاء الاصطناعي"
+              className="inline-flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-bold border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 transition-all active:scale-[0.97] flex-1 sm:flex-none justify-center"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
+              <span className="whitespace-nowrap">تحقق من الجاهزية</span>
+            </button>
             <button
               onClick={() => {
                 if (!validateCurrentSection()) { showToast("يرجى تصحيح الأخطاء قبل المتابعة"); return; }
