@@ -12,7 +12,7 @@ export const asset = (path: string) => `${BASE}/${path.replace(/^\//, "")}`;
 
 export const BRAND = {
   /** Full-colour logo for light backgrounds (headers). */
-  logoColor: asset("brand/logo-color.svg"),
+  logoColor: asset("brand/logo-color.png"),
   /** White/monochrome logo for dark backgrounds (Home hero). */
   logoWhite: asset("brand/logo-white.svg"),
   /** Raster logo (PNG) for the PowerPoint export. */

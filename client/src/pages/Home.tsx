@@ -65,22 +65,22 @@ export default function Home() {
               loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}
           >
-            {/* AI Project emblem + wordmark (emblem hides cleanly if the asset is missing) */}
-            <div className="relative mb-10 md:mb-14 flex flex-col items-center">
-              <div className="absolute -inset-16 rounded-full blur-3xl bg-white/8" />
-              {logoOk && (
+            {/* AI Project logo (full lockup). Falls back to a wordmark if missing. */}
+            <div className="relative mb-9 md:mb-12 flex flex-col items-center">
+              <div className="absolute -inset-16 rounded-full blur-3xl bg-white/10" />
+              {logoOk ? (
                 <img
-                  alt=""
-                  aria-hidden
+                  alt="مشروع الذكاء الاصطناعي المساعد"
                   onError={() => setLogoOk(false)}
-                  className="relative w-28 sm:w-32 md:w-36 h-auto object-contain drop-shadow-2xl mb-6"
+                  className="relative w-[320px] sm:w-[440px] md:w-[540px] lg:w-[600px] h-auto object-contain drop-shadow-2xl"
                   src={AI_LOGO_SVG}
                 />
+              ) : (
+                <h1 className="relative text-3xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight leading-[1.2] drop-shadow-2xl">
+                  مشروع الذكاء الاصطناعي المساعد
+                </h1>
               )}
-              <h1 className="relative text-3xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight leading-[1.2] drop-shadow-2xl">
-                مشروع الذكاء الاصطناعي المساعد
-              </h1>
-              <p className="relative mt-4 text-base sm:text-lg text-white/65 max-w-xl">
+              <p className="relative mt-6 text-base sm:text-lg text-white/70 max-w-xl">
                 منصة تخطيط ومتابعة مسارات العمل الحكومي الذكي
               </p>
             </div>
