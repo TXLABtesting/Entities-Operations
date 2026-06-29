@@ -491,7 +491,6 @@ export default function WorkPlan() {
   const [currentSection, setCurrentSection] = useState(0);
   const [formState, setFormState] = useState<FormState>(() => loadState(trackId));
   const [toastMsg, setToastMsg] = useState("");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [readinessOpen, setReadinessOpen] = useState(false);
   const [validationErrors, setValidationErrors] = useState<{ [key: string]: string }>({});
   const [autoSaveStatus, setAutoSaveStatus] = useState<"idle" | "saving" | "saved">("idle");
@@ -2068,81 +2067,50 @@ export default function WorkPlan() {
         </div>
       </header>
 
-      {/* Mobile sidebar toggle */}
-      <button
-        onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="lg:hidden fixed top-[88px] right-3 z-40 w-11 h-11 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl shadow-lg shadow-blue-500/30 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
-      >
-        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path d="M4 6h16M4 12h16M4 18h16" /></svg>
-      </button>
-
       {/* Layout */}
-      <div className="relative z-10 max-w-[1440px] mx-auto px-3 sm:px-6 py-5 sm:py-7 grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-5 sm:gap-7 items-start">
-        {/* Sidebar Nav */}
-        <nav className={`${sidebarOpen ? `fixed inset-0 z-50 ${"bg-black/30"} backdrop-blur-sm lg:relative lg:bg-transparent` : "hidden lg:block"}`}>
-          <div className={`${sidebarOpen ? `absolute right-0 top-0 bottom-0 w-[280px] ${"bg-white"} shadow-2xl overflow-y-auto p-5` : ""} sticky top-[80px] flex flex-col gap-4`}>
-            {sidebarOpen && (
-              <button onClick={() => setSidebarOpen(false)} className={`lg:hidden absolute top-4 left-4 w-8 h-8 rounded-lg flex items-center justify-center ${"bg-slate-100 text-slate-600"}`}>
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path d="M6 18L18 6M6 6l12 12" /></svg>
-              </button>
-            )}
-
-            {/* Progress card */}
-            <div className={`${"bg-white border-slate-200 shadow-sm"} border rounded-2xl p-4 flex items-center gap-4`}>
-              <div className="relative w-14 h-14 flex-shrink-0">
-                <svg className="w-14 h-14 -rotate-90" viewBox="0 0 56 56">
-                  <circle cx="28" cy="28" r="24" fill="none" stroke={"rgba(0,0,0,0.06)"} strokeWidth="4" />
-                  <circle cx="28" cy="28" r="24" fill="none" stroke="url(#progressGrad)" strokeWidth="4" strokeLinecap="round"
-                    strokeDasharray={`${((currentSection + 1) / SECTIONS.length) * 150.8} 150.8`} className="transition-all duration-700" />
-                  <defs><linearGradient id="progressGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#60a5fa" /><stop offset="100%" stopColor="#34d399" /></linearGradient></defs>
-                </svg>
-                <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-blue-300">
-                  {Math.round(((currentSection + 1) / SECTIONS.length) * 100)}%
-                </span>
-              </div>
-              <div>
-                <p className={`text-sm font-bold ${"text-slate-800"}`}>إجمالي الإنجاز</p>
-                <p className={`text-[11px] ${"text-slate-600"}`}>{currentSection + 1} من {SECTIONS.length} أقسام مكتملة</p>
-              </div>
-            </div>
-
-            {/* Section list */}
-            <div className={`${"bg-white border-slate-200 shadow-sm"} border rounded-2xl overflow-hidden`}>
-              <div className="p-2">
-                {SECTIONS.map((sec, idx) => (
-                  <button
-                    key={sec.id}
-                    onClick={() => { setCurrentSection(idx); setSidebarOpen(false); }}
-                    className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm transition-all duration-200 mb-0.5 ${
-                      currentSection === idx
-                        ? ("bg-blue-50 text-blue-700 font-bold border border-blue-200 shadow-sm")
-                        : ("text-slate-600 hover:bg-slate-50 hover:text-slate-800")
-                    }`}
-                  >
-                    <span className={`flex-shrink-0 w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-bold ${
-                      currentSection === idx ? "bg-blue-500 text-white shadow-sm" : ("bg-slate-100 text-slate-400")
-                    }`}>
-                      {String(idx + 1).padStart(2, "0")}
-                    </span>
-                    <span className="flex-1 truncate text-[11px] font-semibold text-right">{sec.name}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Quick links */}
-            <div className="flex flex-col gap-2 mt-1">
-              <Link href={`/review/${trackId}`} className={`flex items-center gap-2.5 text-xs rounded-xl px-4 py-3.5 font-bold transition-all border group ${"bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-200 hover:border-blue-300"}`}>
-                <svg className="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                مراجعة وتعديل البيانات
-              </Link>
-              <Link href="/tracks-list" className={`flex items-center gap-2 text-xs transition-colors px-4 py-2 group ${"text-slate-500 hover:text-slate-800"}`}>
-                <svg className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-                العودة للمسارات
-              </Link>
-            </div>
+      <div className="relative z-10 max-w-[1600px] mx-auto px-3 sm:px-6 py-5 sm:py-7 flex flex-col gap-5">
+        {/* Horizontal step bar — frees the full width for the content below */}
+        <div className="bg-white border border-slate-200 shadow-sm rounded-2xl p-2.5 flex items-center gap-3 overflow-x-auto">
+          {/* progress ring */}
+          <div className="relative w-11 h-11 flex-shrink-0">
+            <svg className="w-11 h-11 -rotate-90" viewBox="0 0 44 44">
+              <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(0,0,0,0.06)" strokeWidth="4" />
+              <circle cx="22" cy="22" r="18" fill="none" stroke="#2563eb" strokeWidth="4" strokeLinecap="round"
+                strokeDasharray={`${((currentSection + 1) / SECTIONS.length) * 113} 113`} className="transition-all duration-700" />
+            </svg>
+            <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-blue-600">
+              {Math.round(((currentSection + 1) / SECTIONS.length) * 100)}%
+            </span>
           </div>
-        </nav>
+          {/* section pills */}
+          <div className="flex items-center gap-2 flex-1 min-w-0">
+            {SECTIONS.map((sec, idx) => (
+              <button
+                key={sec.id}
+                onClick={() => { setCurrentSection(idx); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                className={`flex items-center gap-2 px-3 py-2 rounded-xl text-[12px] font-semibold whitespace-nowrap transition-all ${
+                  currentSection === idx ? "bg-blue-50 text-blue-700 border border-blue-200" : "text-slate-500 hover:bg-slate-50 border border-transparent"
+                }`}
+              >
+                <span className={`flex-shrink-0 w-5 h-5 rounded-md flex items-center justify-center text-[9px] font-bold ${
+                  currentSection === idx ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-400"
+                }`}>{String(idx + 1).padStart(2, "0")}</span>
+                {sec.name}
+              </button>
+            ))}
+          </div>
+          {/* quick links */}
+          <div className="flex items-center gap-1.5 flex-shrink-0">
+            <Link href={`/review/${trackId}`} className="inline-flex items-center gap-1.5 text-[12px] rounded-xl px-3 py-2 font-bold bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 whitespace-nowrap">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+              مراجعة
+            </Link>
+            <Link href="/tracks-list" className="inline-flex items-center gap-1 text-[12px] px-2.5 py-2 text-slate-500 hover:text-slate-800 whitespace-nowrap">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+              المسارات
+            </Link>
+          </div>
+        </div>
 
         {/* Main Content */}
         <main className="min-w-0">
