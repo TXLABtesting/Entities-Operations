@@ -2,7 +2,7 @@ import { Link, useLocation } from "wouter";
 import { useEffect, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 
-import { TeamRegistration, checkTeamRegistrationComplete } from "@/components/TeamRegistration";
+import { TeamRegistration } from "@/components/TeamRegistration";
 import { BRAND } from "@/lib/brand";
 
 const AI_LOGO = BRAND.logoColor;
@@ -211,15 +211,11 @@ export default function TracksList() {
   }, []);
 
   const selectTrack = (trackId: number) => {
-    // Check if team registration is complete before allowing navigation
-    if (!checkTeamRegistrationComplete()) {
-      setShowTeamReg(true);
-      return;
-    }
+    // Team registration is optional — open the track form directly so users can
+    // fill the models themselves. The "تسجيل فرق العمل" button remains available.
     const newSelection = [trackId];
     setSelectedTracks(newSelection);
     saveSelectedPaths(newSelection);
-    // Navigate directly to the selected track
     navigate(`/workplan/${trackId}`);
   };
 
@@ -275,7 +271,7 @@ src={AI_LOGO}
         <button
           onClick={() => setShowTeamReg(true)}
           className={`flex items-center gap-3 px-8 py-4 rounded-2xl text-base font-bold transition-all active:scale-[0.97] shadow-lg hover:shadow-xl hover:scale-[1.02] ${
-            "bg-gradient-to-l from-blue-500 to-indigo-600 text-white border-2 border-blue-400/50 hover:from-blue-600 hover:to-indigo-700 shadow-blue-500/25"
+            "bg-blue-600 text-white hover:bg-blue-500 shadow-blue-500/25"
           }`}
         >
           <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -309,23 +305,23 @@ src={AI_LOGO}
                 <div
                   key={track.id}
                   onClick={() => selectTrack(track.id)}
-                  className={`group relative flex flex-col items-center text-center p-5 sm:p-6 rounded-2xl bg-white border ${
+                  className={`group relative flex flex-col items-center text-center p-5 sm:p-6 rounded-3xl bg-white border transition-all duration-300 hover:-translate-y-1 active:scale-[0.99] cursor-pointer h-full ${
                     isSelected
-                      ? "border-blue-500 ring-1 ring-blue-500/40 shadow-md shadow-blue-100"
-                      : "border-slate-200 group-hover:border-blue-300"
-                  } transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.99] cursor-pointer h-full ${
-                    loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-                  } hover:shadow-md hover:shadow-slate-200/70`}
+                      ? "border-blue-300 ring-1 ring-blue-200 shadow-[0_12px_28px_-10px_rgba(37,99,235,0.35)]"
+                      : "border-slate-100 shadow-[0_6px_22px_-12px_rgba(15,23,42,0.18)] hover:shadow-[0_14px_30px_-12px_rgba(15,23,42,0.22)]"
+                  } ${loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
                   style={{ transitionDelay: `${idx * 80}ms` }}
                 >
                   {/* Track number badge */}
-                  <div className="absolute top-3 left-3 text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-400">
+                  <div className="absolute top-4 left-4 text-[10px] font-bold tracking-wider text-slate-300">
                     {track.number}
                   </div>
 
                   {/* Icon container */}
-                  <div className={`relative w-16 h-16 sm:w-[72px] sm:h-[72px] rounded-2xl flex items-center justify-center mb-5 transition-colors duration-300 ${
-                    isSelected ? "bg-blue-600 text-white" : "bg-blue-50 text-blue-600 group-hover:bg-blue-100"
+                  <div className={`relative w-16 h-16 sm:w-[68px] sm:h-[68px] rounded-2xl flex items-center justify-center mb-5 transition-all duration-300 ${
+                    isSelected
+                      ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30"
+                      : "bg-slate-50 text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-500"
                   }`}>
                     <div className="relative z-10">
                       {track.icon}
@@ -336,14 +332,34 @@ src={AI_LOGO}
                   <h3 className="text-sm sm:text-base font-bold mb-2 leading-snug text-[#0a1628]">
                     {track.name}
                   </h3>
-                  <p className={`text-[11px] sm:text-xs leading-relaxed transition-colors line-clamp-2 ${
-                    "text-slate-500 group-hover:text-slate-700"
-                  }`}>
+                  <p className="text-[11px] sm:text-xs leading-relaxed line-clamp-2 text-slate-400 group-hover:text-slate-500 transition-colors">
                     {track.desc}
                   </p>
+
+                  {/* Status pill */}
+                  <div className={`mt-5 inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full transition-colors ${
+                    isSelected ? "bg-blue-50 text-blue-600" : "bg-slate-50 text-slate-400 group-hover:bg-slate-100"
+                  }`}>
+                    {isSelected ? (
+                      <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}><path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                    ) : (
+                      <span className="w-3 h-3 rounded-full border-[1.5px] border-current" />
+                    )}
+                    {isSelected ? "مختار" : "غير مختار"}
+                  </div>
                 </div>
               );
             })}
+          </div>
+
+          {/* Selection summary — dotted connector + count pill */}
+          <div className="hidden xl:flex items-center justify-center gap-0 mt-8">
+            <span className="flex-1 max-w-[180px] border-t border-dashed border-slate-300" />
+            <div className="mx-3 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-slate-200 shadow-sm">
+              <span className={`w-2 h-2 rounded-full ${selectedTracks.length ? "bg-blue-500" : "bg-slate-300"}`} />
+              <span className="text-[12px] font-bold text-slate-600">{selectedTracks.length} من {tracks.length} مسارات مختارة</span>
+            </div>
+            <span className="flex-1 max-w-[180px] border-t border-dashed border-slate-300" />
           </div>
         </div>
 

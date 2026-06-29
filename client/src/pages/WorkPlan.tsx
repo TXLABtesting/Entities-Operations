@@ -2189,19 +2189,14 @@ export default function WorkPlan() {
               onClick={() => {
                 if (!validateCurrentSection()) { showToast("يرجى تصحيح الأخطاء قبل المتابعة"); return; }
                 if (currentSection >= SECTIONS.length - 1) {
-                  // If there's a next track, go to it; otherwise go to review
-                  if (hasNextTrack && nextTrackId) {
-                    navigate(`/workplan/${nextTrackId}`);
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                  } else {
-                    navigate(`/review/${trackId}`);
-                  }
+                  // Last section: run the AI readiness review over ALL inputs first.
+                  setReadinessOpen(true);
                 }
                 else { setCurrentSection(currentSection + 1); window.scrollTo({ top: 0, behavior: "smooth" }); }
               }}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-l from-blue-500 to-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 hover:scale-[1.02] active:scale-[0.97] transition-all"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-500/20 hover:bg-blue-500 hover:shadow-blue-500/30 active:scale-[0.97] transition-all"
             >
-              {currentSection >= SECTIONS.length - 1 ? (hasNextTrack ? `المسار التالي: ${TRACKS[nextTrackId! - 1]}` : "مراجعة وإنهاء") : "التالي"}
+              {currentSection >= SECTIONS.length - 1 ? "مراجعة الجاهزية والإنهاء" : "التالي"}
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path d="M15 18l-6-6 6-6" /></svg>
             </button>
           </div>
@@ -2247,7 +2242,20 @@ export default function WorkPlan() {
       )}
 
       {/* Agentification readiness review */}
-      <ReadinessReview plan={formState} trackName={trackName} open={readinessOpen} onClose={() => setReadinessOpen(false)} />
+      <ReadinessReview
+        plan={formState}
+        trackName={trackName}
+        open={readinessOpen}
+        onClose={() => setReadinessOpen(false)}
+        onProceed={() => {
+          if (hasNextTrack && nextTrackId) {
+            navigate(`/workplan/${nextTrackId}`);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          } else {
+            navigate(`/review/${trackId}`);
+          }
+        }}
+      />
     </div>
   );
 }

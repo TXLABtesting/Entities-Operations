@@ -60,7 +60,7 @@ function FindingCard({ f }: { f: Finding }) {
   );
 }
 
-export default function ReadinessReview({ plan, trackName, open, onClose }: { plan: PlanState; trackName?: string; open: boolean; onClose: () => void }) {
+export default function ReadinessReview({ plan, trackName, open, onClose, onProceed }: { plan: PlanState; trackName?: string; open: boolean; onClose: () => void; onProceed?: () => void }) {
   const [report, setReport] = useState<EnrichedReport | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -130,7 +130,16 @@ export default function ReadinessReview({ plan, trackName, open, onClose }: { pl
           <p className="text-[11px] text-slate-400">يتبع منطق خوارزمية الأولوية: الحجم، الجهد، الأثر، البيانات، الأنظمة، المخاطر.</p>
           <div className="flex items-center gap-2">
             <button onClick={run} disabled={loading} className="px-3.5 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 disabled:opacity-50 transition-colors">إعادة الفحص</button>
-            <button onClick={onClose} className="px-4 py-2 rounded-lg text-xs font-bold bg-blue-600 text-white hover:bg-blue-500 transition-colors">إغلاق</button>
+            {onProceed ? (
+              <>
+                <button onClick={onClose} className="px-3.5 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors">متابعة التعبئة</button>
+                <button onClick={() => { onClose(); onProceed(); }} disabled={loading} className={`px-4 py-2 rounded-lg text-xs font-bold text-white transition-colors disabled:opacity-50 ${report?.ready ? "bg-emerald-600 hover:bg-emerald-500" : "bg-blue-600 hover:bg-blue-500"}`}>
+                  {report?.ready ? "اعتماد ومتابعة" : "المتابعة للمراجعة النهائية"}
+                </button>
+              </>
+            ) : (
+              <button onClick={onClose} className="px-4 py-2 rounded-lg text-xs font-bold bg-blue-600 text-white hover:bg-blue-500 transition-colors">إغلاق</button>
+            )}
           </div>
         </div>
       </div>
