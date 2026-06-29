@@ -35,8 +35,8 @@ const PHASES = [
   { num: "8", title: "التحسين والتوسع في التطبيق", date: "مارس – مايو 2028" },
 ];
 
-const AI_LOGO = "/manus-storage/GOVSPRINTS-THELOGO_ORIGINAL(1)_cc28cd35.svg";
-const AI_LOGO_WHITE = "/manus-storage/GOVSPRINTS-THELOGO_WHITE_bb9815e1.svg";
+const AI_LOGO = "/brand/logo-color.svg";
+const AI_LOGO_WHITE = "/brand/logo-white.svg";
 
 const OPS_COLUMNS = [
   { key: "taskName", label: "المهمة/العملية/الخدمة" },
