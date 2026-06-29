@@ -870,7 +870,7 @@ export default function WorkPlan() {
     const arabicNums = ["١","٢","٣","٤","٥","٦","٧","٨","٩","١٠","١١","١٢","١٣","١٤","١٥","١٦"];
 
     const numBadge = (n: number) => (
-      <span className="flex-shrink-0 w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-cyan-400 text-white text-[13px] font-bold flex items-center justify-center shadow-sm shadow-blue-500/20" style={{ fontFamily: "'DM Mono', monospace" }}>
+      <span className="flex-shrink-0 w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-blue-500 text-white text-[13px] font-bold flex items-center justify-center shadow-sm shadow-blue-500/20" style={{ fontFamily: "'DM Mono', monospace" }}>
         {arabicNums[n - 1]}
       </span>
     );
@@ -885,7 +885,7 @@ export default function WorkPlan() {
       </div>
     );
 
-    const inputCls = `w-full px-4 py-3 text-[14px] rounded-xl border transition-all duration-150 outline-none ${"bg-slate-50 border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-cyan-400 focus:bg-white focus:ring-2 focus:ring-cyan-400/10"}`;
+    const inputCls = `w-full px-4 py-3 text-[14px] rounded-xl border transition-all duration-150 outline-none ${"bg-slate-50 border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-400/15"}`;
 
     const selectField = (key: string, options: string[], placeholder: string) => (
       <SearchableSelect
@@ -980,14 +980,14 @@ export default function WorkPlan() {
         <table className="w-full min-w-[500px] sm:min-w-[700px] border-collapse text-xs sm:text-sm">
           <thead>
             <tr>
-              <th className="bg-gradient-to-b from-blue-600 to-blue-700 text-white text-[10px] sm:text-xs font-bold py-3 sm:py-3.5 px-2 sm:px-3 text-right w-8 sm:w-10">#</th>
+              <th className="bg-slate-50 text-slate-600 border-b border-slate-200 text-[10px] sm:text-xs font-bold py-3 sm:py-3.5 px-2 sm:px-3 text-right w-8 sm:w-10">#</th>
               {columns.map((col) => (
-                <th key={col.key} className="bg-gradient-to-b from-blue-600 to-blue-700 text-white text-[10px] sm:text-xs font-bold py-3 sm:py-3.5 px-2 sm:px-3 text-right">
+                <th key={col.key} className="bg-slate-50 text-slate-600 border-b border-slate-200 text-[10px] sm:text-xs font-bold py-3 sm:py-3.5 px-2 sm:px-3 text-right">
                   {col.label}
                   {col.hint && <span className={`block text-[10px] font-normal mt-0.5 ${"text-white/80"}`}>{col.hint}</span>}
                 </th>
               ))}
-              <th className="bg-gradient-to-b from-blue-600 to-blue-700 text-white text-[10px] sm:text-xs font-bold py-3 sm:py-3.5 px-2 sm:px-3 w-8 sm:w-10"></th>
+              <th className="bg-slate-50 text-slate-600 border-b border-slate-200 text-[10px] sm:text-xs font-bold py-3 sm:py-3.5 px-2 sm:px-3 w-8 sm:w-10"></th>
             </tr>
           </thead>
           <tbody>
@@ -1088,7 +1088,7 @@ export default function WorkPlan() {
     const rows = formState.tables.tblOps || [{}];
     const cellInputCls = `w-full min-w-[130px] px-3.5 py-3 ${"bg-white border-slate-200 text-slate-800 placeholder:text-slate-300"} border rounded-lg text-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-400/15 outline-none transition-all`;
     const cellTextAreaCls = `${cellInputCls} resize-y min-h-[72px] leading-relaxed`;
-    const headerCls = "bg-gradient-to-b from-blue-600 to-blue-700 text-white text-[11px] sm:text-xs font-bold py-3 px-3 text-right align-top";
+    const headerCls = "bg-slate-50 text-slate-600 border-b border-slate-200 text-[11px] sm:text-xs font-bold py-3 px-3 text-right align-top";
     const cellCls = `py-2 px-2 border-b align-top ${"border-slate-100"}`;
 
     const renderStrategicSelect = (row: Record<string, string>, idx: number, key: string, options: string[], placeholder = "اختر...") => (
@@ -1276,13 +1276,13 @@ export default function WorkPlan() {
         <table className="w-full min-w-[2400px] border-collapse text-xs">
           <thead>
             <tr>
-              <th className="bg-gradient-to-b from-blue-600 to-blue-700 text-white text-[10px] font-bold py-3.5 px-2 text-right w-8 sticky left-0 z-10">#</th>
+              <th className="bg-slate-50 text-slate-600 border-b border-slate-200 text-[10px] font-bold py-3.5 px-2 text-right w-8 sticky left-0 z-10">#</th>
               {columns.map((col) => (
-                <th key={col.key} className="bg-gradient-to-b from-blue-600 to-blue-700 text-white text-[10px] font-bold py-3.5 px-2 text-right min-w-[120px]">
+                <th key={col.key} className="bg-slate-50 text-slate-600 border-b border-slate-200 text-[10px] font-bold py-3.5 px-2 text-right min-w-[120px]">
                   {col.label}
                 </th>
               ))}
-              <th className="bg-gradient-to-b from-blue-600 to-blue-700 text-white text-[10px] font-bold py-3.5 px-2 w-8"></th>
+              <th className="bg-slate-50 text-slate-600 border-b border-slate-200 text-[10px] font-bold py-3.5 px-2 w-8"></th>
             </tr>
           </thead>
           <tbody>
@@ -1397,13 +1397,13 @@ export default function WorkPlan() {
         <table className="w-full min-w-[2400px] border-collapse text-xs">
           <thead>
             <tr>
-              <th className="bg-gradient-to-b from-blue-600 to-blue-700 text-white text-[10px] font-bold py-3.5 px-2 text-right w-8 sticky left-0 z-10">#</th>
+              <th className="bg-slate-50 text-slate-600 border-b border-slate-200 text-[10px] font-bold py-3.5 px-2 text-right w-8 sticky left-0 z-10">#</th>
               {columns.map((col) => (
-                <th key={col.key} className="bg-gradient-to-b from-blue-600 to-blue-700 text-white text-[10px] font-bold py-3.5 px-2 text-right min-w-[120px]">
+                <th key={col.key} className="bg-slate-50 text-slate-600 border-b border-slate-200 text-[10px] font-bold py-3.5 px-2 text-right min-w-[120px]">
                   {col.label}
                 </th>
               ))}
-              <th className="bg-gradient-to-b from-blue-600 to-blue-700 text-white text-[10px] font-bold py-3.5 px-2 w-8"></th>
+              <th className="bg-slate-50 text-slate-600 border-b border-slate-200 text-[10px] font-bold py-3.5 px-2 w-8"></th>
             </tr>
           </thead>
           <tbody>
@@ -1558,7 +1558,7 @@ export default function WorkPlan() {
               <p className="text-center text-4xl font-bold text-blue-500" style={{ fontVariantNumeric: "tabular-nums" }}>{totalOps}</p>
               <p className={`text-[10px] text-center mt-2 ${"text-slate-500"}`}>يُحسب تلقائياً</p>
             </div>
-            <div className={`relative overflow-hidden ${"bg-emerald-50 border-emerald-200/60"} border rounded-2xl p-5`}>
+            <div className={`relative overflow-hidden ${"bg-slate-50 border-slate-200"} border rounded-2xl p-5`}>
               <div className="absolute top-0 right-0 left-0 h-[3px] bg-gradient-to-l from-emerald-400 to-emerald-600" />
               <label className={`text-[11px] font-bold block mb-3 ${"text-slate-700"}`}>القابلة للتحول</label>
               <p className="text-center text-4xl font-bold text-emerald-500" style={{ fontVariantNumeric: "tabular-nums" }}>{totalEligible}</p>
@@ -1597,7 +1597,7 @@ export default function WorkPlan() {
             <p className="text-center text-4xl font-bold text-blue-500" style={{ fontVariantNumeric: "tabular-nums" }}>{totalOps}</p>
             <p className={`text-[10px] text-center mt-2 ${"text-slate-500"}`}>يُحسب تلقائياً</p>
           </div>
-          <div className={`relative overflow-hidden ${"bg-emerald-50 border-emerald-200/60"} border rounded-2xl p-5`}>
+          <div className={`relative overflow-hidden ${"bg-slate-50 border-slate-200"} border rounded-2xl p-5`}>
             <div className="absolute top-0 right-0 left-0 h-[3px] bg-gradient-to-l from-emerald-400 to-emerald-600" />
             <label className={`text-[11px] font-bold block mb-3 ${"text-slate-700"}`}>القابلة للتحول للذكاء الاصطناعي المساعد</label>
             <p className="text-center text-4xl font-bold text-emerald-500" style={{ fontVariantNumeric: "tabular-nums" }}>{totalEligible}</p>
@@ -1866,11 +1866,11 @@ export default function WorkPlan() {
           <table className="w-full min-w-[500px] sm:min-w-[700px] border-collapse text-xs sm:text-sm">
             <thead>
               <tr>
-                <th className="bg-gradient-to-b from-blue-600 to-blue-700 text-white text-[10px] sm:text-xs font-bold py-3 sm:py-3.5 px-2 sm:px-3 text-right">المسار</th>
-                <th className="bg-gradient-to-b from-blue-600 to-blue-700 text-white text-[10px] sm:text-xs font-bold py-3 sm:py-3.5 px-2 sm:px-3 text-right">الاسم</th>
-                <th className="bg-gradient-to-b from-blue-600 to-blue-700 text-white text-[10px] sm:text-xs font-bold py-3 sm:py-3.5 px-2 sm:px-3 text-right">المسمى</th>
-                <th className="bg-gradient-to-b from-blue-600 to-blue-700 text-white text-[10px] sm:text-xs font-bold py-3 sm:py-3.5 px-2 sm:px-3 text-right">البريد</th>
-                <th className="bg-gradient-to-b from-blue-600 to-blue-700 text-white text-[10px] sm:text-xs font-bold py-3 sm:py-3.5 px-2 sm:px-3 text-right">الهاتف</th>
+                <th className="bg-slate-50 text-slate-600 border-b border-slate-200 text-[10px] sm:text-xs font-bold py-3 sm:py-3.5 px-2 sm:px-3 text-right">المسار</th>
+                <th className="bg-slate-50 text-slate-600 border-b border-slate-200 text-[10px] sm:text-xs font-bold py-3 sm:py-3.5 px-2 sm:px-3 text-right">الاسم</th>
+                <th className="bg-slate-50 text-slate-600 border-b border-slate-200 text-[10px] sm:text-xs font-bold py-3 sm:py-3.5 px-2 sm:px-3 text-right">المسمى</th>
+                <th className="bg-slate-50 text-slate-600 border-b border-slate-200 text-[10px] sm:text-xs font-bold py-3 sm:py-3.5 px-2 sm:px-3 text-right">البريد</th>
+                <th className="bg-slate-50 text-slate-600 border-b border-slate-200 text-[10px] sm:text-xs font-bold py-3 sm:py-3.5 px-2 sm:px-3 text-right">الهاتف</th>
 
               </tr>
             </thead>
@@ -1999,11 +1999,11 @@ export default function WorkPlan() {
 
           </div>
           <div className="flex gap-1.5 sm:gap-2 flex-wrap items-center">
-            <button onClick={() => setReadinessOpen(true)} className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2.5 sm:py-2 bg-gradient-to-l from-violet-600 to-blue-600 text-white rounded-lg text-xs sm:text-xs font-bold hover:from-violet-500 hover:to-blue-500 transition-all shadow-sm shadow-blue-500/20 hover:shadow-blue-500/30 active:scale-[0.97]">
+            <button onClick={() => setReadinessOpen(true)} className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2.5 sm:py-2 bg-blue-600 text-white rounded-lg text-xs sm:text-xs font-bold hover:bg-blue-500 transition-all shadow-sm shadow-blue-500/20 hover:shadow-blue-500/30 active:scale-[0.97]">
               <svg className="w-4 h-4 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
               <span>تحقق من الجاهزية</span>
             </button>
-            <button onClick={handleSave} className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2.5 sm:py-2 bg-emerald-500/90 text-white rounded-lg text-xs sm:text-xs font-bold hover:bg-emerald-400 transition-all shadow-sm shadow-emerald-500/20 hover:shadow-emerald-500/30 active:scale-[0.97]">
+            <button onClick={handleSave} className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2.5 sm:py-2 bg-blue-50 border border-blue-200 text-blue-700 rounded-lg text-xs sm:text-xs font-bold hover:bg-blue-100 transition-all active:scale-[0.97]">
               <svg className="w-4 h-4 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path d="M5 13l4 4L19 7" /></svg>
               حفظ
             </button>
@@ -2022,11 +2022,11 @@ export default function WorkPlan() {
               <span className="hidden sm:inline">استيراد</span>
             </button>
 
-            <button onClick={() => exportToExcel(formState, trackId)} className={`inline-flex items-center gap-1.5 px-3 sm:px-3 py-2.5 sm:py-2 rounded-lg text-xs sm:text-xs font-medium transition-all active:scale-[0.97] ${"bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100 hover:text-emerald-800"}`}>
+            <button onClick={() => exportToExcel(formState, trackId)} className={`inline-flex items-center gap-1.5 px-3 sm:px-3 py-2.5 sm:py-2 rounded-lg text-xs sm:text-xs font-medium transition-all active:scale-[0.97] ${"bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 hover:text-slate-900"}`}>
               <svg className="w-4 h-4 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
               <span className="hidden sm:inline">Excel</span>
             </button>
-            <button onClick={() => exportToPptx(formState, trackId)} className={`inline-flex items-center gap-1.5 px-3 sm:px-3 py-2.5 sm:py-2 rounded-lg text-xs sm:text-xs font-medium transition-all active:scale-[0.97] ${"bg-orange-50 border border-orange-200 text-orange-700 hover:bg-orange-100 hover:text-orange-800"}`}>
+            <button onClick={() => exportToPptx(formState, trackId)} className={`inline-flex items-center gap-1.5 px-3 sm:px-3 py-2.5 sm:py-2 rounded-lg text-xs sm:text-xs font-medium transition-all active:scale-[0.97] ${"bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 hover:text-slate-900"}`}>
               <svg className="w-4 h-4 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
               <span className="hidden sm:inline">PowerPoint</span>
             </button>
@@ -2041,7 +2041,7 @@ export default function WorkPlan() {
           </div>
         </div>
         <div className={`h-[2px] ${"bg-slate-100"}`}>
-          <div className="h-full bg-gradient-to-l from-blue-500 via-blue-400 to-cyan-400 transition-all duration-700 ease-out shadow-sm shadow-blue-400/30" style={{ width: `${((currentSection + 1) / SECTIONS.length) * 100}%` }} />
+          <div className="h-full bg-blue-600 transition-all duration-700 ease-out" style={{ width: `${((currentSection + 1) / SECTIONS.length) * 100}%` }} />
         </div>
       </header>
 

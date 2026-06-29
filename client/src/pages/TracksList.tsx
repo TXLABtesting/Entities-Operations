@@ -236,7 +236,7 @@ export default function TracksList() {
         {(
           <>
             <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-blue-200/20 rounded-full blur-[120px]" />
-            <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-purple-200/15 rounded-full blur-[100px]" />
+            <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-blue-100/25 rounded-full blur-[100px]" />
           </>
         )}
       </div>
@@ -309,37 +309,31 @@ src={AI_LOGO}
                 <div
                   key={track.id}
                   onClick={() => selectTrack(track.id)}
-                  className={`group relative flex flex-col items-center text-center p-5 sm:p-6 rounded-2xl bg-gradient-to-b ${
-                    track.bgGradientLight
-                  } border-2 ${
+                  className={`group relative flex flex-col items-center text-center p-5 sm:p-6 rounded-2xl bg-white border ${
                     isSelected
-                      ? "border-blue-500 shadow-lg shadow-blue-200/50"
-                      : track.borderColorLight.replace("hover:", "group-hover:")
-                  } transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] cursor-pointer backdrop-blur-sm h-full ${
+                      ? "border-blue-500 ring-1 ring-blue-500/40 shadow-md shadow-blue-100"
+                      : "border-slate-200 group-hover:border-blue-300"
+                  } transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.99] cursor-pointer h-full ${
                     loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-                  } hover:shadow-lg hover:shadow-black/10`}
-                  style={{ transitionDelay: `${idx * 100}ms` }}
+                  } hover:shadow-md hover:shadow-slate-200/70`}
+                  style={{ transitionDelay: `${idx * 80}ms` }}
                 >
                   {/* Track number badge */}
-                  <div className={`absolute top-3 left-3 text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                    "bg-slate-100 text-slate-400"
-                  }`}>
+                  <div className="absolute top-3 left-3 text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-400">
                     {track.number}
                   </div>
 
                   {/* Icon container */}
-                  <div className={`relative w-20 h-20 sm:w-[88px] sm:h-[88px] rounded-2xl bg-gradient-to-br ${track.iconBg} flex items-center justify-center shadow-xl mb-5 group-hover:shadow-2xl group-hover:scale-110 transition-all duration-300`}>
-                    <div className="absolute inset-0 rounded-2xl bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <div className="absolute -inset-1 rounded-2xl bg-gradient-to-br opacity-0 group-hover:opacity-20 transition-opacity blur-sm" style={{ background: `linear-gradient(135deg, white, transparent)` }} />
-                    <div className="text-white relative z-10">
+                  <div className={`relative w-16 h-16 sm:w-[72px] sm:h-[72px] rounded-2xl flex items-center justify-center mb-5 transition-colors duration-300 ${
+                    isSelected ? "bg-blue-600 text-white" : "bg-blue-50 text-blue-600 group-hover:bg-blue-100"
+                  }`}>
+                    <div className="relative z-10">
                       {track.icon}
                     </div>
                   </div>
-                  
+
                   {/* Text content */}
-                  <h3 className={`text-sm sm:text-base font-bold mb-2 transition-colors leading-snug ${
-                    "text-[#0a1628] group-hover:text-[#0a1628]"
-                  }`}>
+                  <h3 className="text-sm sm:text-base font-bold mb-2 leading-snug text-[#0a1628]">
                     {track.name}
                   </h3>
                   <p className={`text-[11px] sm:text-xs leading-relaxed transition-colors line-clamp-2 ${
