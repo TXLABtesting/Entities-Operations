@@ -119,7 +119,6 @@ const ENTITY_EMAIL_DOMAINS: { [key: string]: string } = {
 
 
 const ALL_SECTIONS = [
-  { id: "bulk", name: "الرفع المجمّع", icon: "M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" },
   { id: "s2", name: "المشاريع والمبادرات", icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" },
   { id: "s4", name: "العمليات والدعم المؤسسي", icon: "M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" },
   { id: "s5", name: "المستهدفات والنتائج المتوقعة", icon: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" },
@@ -492,6 +491,12 @@ export default function WorkPlan() {
   const [formState, setFormState] = useState<FormState>(() => loadState(trackId));
   const [toastMsg, setToastMsg] = useState("");
   const [readinessOpen, setReadinessOpen] = useState(false);
+  // Entry path: choose between manual form and bulk upload (skip if data exists)
+  const [entryChoice, setEntryChoice] = useState<"choose" | "manual" | "bulk">(() => {
+    const init = loadState(trackId);
+    const hasData = (init.tables.tblOps || []).some((r) => r.taskName && r.taskName.trim()) || !!(init.fields.entity && init.fields.entity.trim());
+    return hasData ? "manual" : "choose";
+  });
   const [validationErrors, setValidationErrors] = useState<{ [key: string]: string }>({});
   const [autoSaveStatus, setAutoSaveStatus] = useState<"idle" | "saving" | "saved">("idle");
   const [lastSavedTime, setLastSavedTime] = useState<string>("");
@@ -1916,19 +1921,84 @@ export default function WorkPlan() {
   };
 
   const renderBulkUpload = () => (
-    <div className="space-y-6">
-      {renderGuidance("ارفع بيانات العمليات دفعة واحدة عبر قالب Excel جاهز، ثم تحقّق من جاهزيتها قبل الاعتماد.")}
-      <BulkUpload
-        onImport={importBulkOps}
-        onReview={() => setReadinessOpen(true)}
-        currentCount={(formState.tables.tblOps || []).filter((r) => r.taskName && r.taskName.trim()).length}
-      />
-    </div>
+    <BulkUpload
+      onImport={importBulkOps}
+      onReview={() => setReadinessOpen(true)}
+      currentCount={(formState.tables.tblOps || []).filter((r) => r.taskName && r.taskName.trim()).length}
+    />
+  );
+
+  // Entry chooser: bulk upload OR manual entry (not a forced step)
+  const renderEntryChooser = () => {
+    const option = (opts: { onClick: () => void; title: string; desc: string; cta: string; icon: React.ReactNode; primary?: boolean }) => (
+      <button
+        onClick={opts.onClick}
+        className={`group flex flex-col items-center text-center p-7 sm:p-9 rounded-3xl border bg-white transition-all hover:-translate-y-1 active:scale-[0.99] ${
+          opts.primary ? "border-blue-200 ring-1 ring-blue-100 shadow-[0_14px_34px_-14px_rgba(37,99,235,0.4)]" : "border-slate-200 shadow-[0_8px_26px_-14px_rgba(15,23,42,0.2)] hover:border-blue-300"
+        }`}
+      >
+        <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-5 transition-colors ${opts.primary ? "bg-blue-600 text-white" : "bg-blue-50 text-blue-600 group-hover:bg-blue-100"}`}>
+          {opts.icon}
+        </div>
+        <h3 className="text-lg font-bold text-slate-800 mb-2">{opts.title}</h3>
+        <p className="text-[13px] text-slate-500 leading-relaxed mb-6 max-w-xs">{opts.desc}</p>
+        <span className={`mt-auto inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-[13px] font-bold ${opts.primary ? "bg-blue-600 text-white group-hover:bg-blue-500" : "bg-blue-50 text-blue-700 group-hover:bg-blue-100"}`}>
+          {opts.cta}
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path d="M15 18l-6-6 6-6" /></svg>
+        </span>
+      </button>
+    );
+    return (
+      <section className="bg-white border border-slate-200 shadow-sm rounded-2xl p-6 sm:p-10">
+        <div className="text-center mb-8">
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-800">كيف تريد إدخال البيانات؟</h2>
+          <p className="text-[13px] text-slate-500 mt-2">اختر الطريقة المناسبة — يمكنك التبديل لاحقاً.</p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-3xl mx-auto">
+          {option({
+            onClick: () => { setEntryChoice("manual"); setCurrentSection(0); },
+            title: "التعبئة اليدوية",
+            desc: "املأ النموذج قسماً بقسم بنفسك مع إمكانية الاستعانة بالذكاء الاصطناعي في حقول التقييم.",
+            cta: "ابدأ التعبئة",
+            icon: (<svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>),
+          })}
+          {option({
+            onClick: () => setEntryChoice("bulk"),
+            title: "الرفع المجمّع",
+            desc: "نزّل قالب Excel، عبّئ كل العمليات دفعة واحدة، ثم ارفعه — وتُراجَع الجاهزية بالذكاء الاصطناعي قبل الاعتماد.",
+            cta: "رفع ملف Excel",
+            primary: true,
+            icon: (<svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 13l3-3m0 0l3 3m-3-3v9" /></svg>),
+          })}
+        </div>
+      </section>
+    );
+  };
+
+  const renderBulkMode = () => (
+    <section className="bg-white border border-slate-200 shadow-sm rounded-2xl p-5 sm:p-7">
+      <div className="flex items-center justify-between gap-3 mb-5">
+        <h2 className="text-lg sm:text-xl font-bold text-slate-800">الرفع المجمّع للعمليات</h2>
+        <button onClick={() => setEntryChoice("choose")} className="inline-flex items-center gap-1.5 text-[12.5px] font-bold text-slate-500 hover:text-slate-800">
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path d="M9 5l7 7-7 7" /></svg>
+          تغيير الطريقة
+        </button>
+      </div>
+      {renderBulkUpload()}
+      <div className="flex flex-wrap items-center justify-end gap-2.5 mt-6 pt-5 border-t border-slate-100">
+        <button onClick={() => { setEntryChoice("manual"); setCurrentSection(0); }} className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-[13px] font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors">
+          التعديل اليدوي للبيانات
+        </button>
+        <button onClick={() => setReadinessOpen(true)} className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-[13px] font-bold bg-blue-600 text-white hover:bg-blue-500 transition-colors">
+          مراجعة الجاهزية والإنهاء
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path d="M15 18l-6-6 6-6" /></svg>
+        </button>
+      </div>
+    </section>
   );
 
   // Map section IDs to their renderers
   const SECTION_RENDERER_MAP: Record<string, () => React.ReactNode> = {
-    bulk: renderBulkUpload,
     s2: renderSection2,
     s4: renderSection4,
     s5: renderSection5,
@@ -2069,7 +2139,8 @@ export default function WorkPlan() {
 
       {/* Layout */}
       <div className="relative z-10 max-w-[1600px] mx-auto px-3 sm:px-6 py-5 sm:py-7 flex flex-col gap-5">
-        {/* Horizontal step bar — frees the full width for the content below */}
+        {/* Horizontal step bar — only in manual mode */}
+        {entryChoice === "manual" && (
         <div className="bg-white border border-slate-200 shadow-sm rounded-2xl p-2.5 flex items-center gap-3 overflow-x-auto">
           {/* progress ring */}
           <div className="relative w-11 h-11 flex-shrink-0">
@@ -2111,9 +2182,13 @@ export default function WorkPlan() {
             </Link>
           </div>
         </div>
+        )}
 
         {/* Main Content */}
         <main className="min-w-0">
+          {entryChoice === "choose" ? renderEntryChooser()
+            : entryChoice === "bulk" ? renderBulkMode()
+            : (<>
           <section className={`${"bg-white border-slate-200 shadow-sm"} border rounded-2xl overflow-hidden shadow-xl`}>
             <div className={`relative px-5 sm:px-8 pt-6 sm:pt-8 pb-5 sm:pb-6 border-b ${"bg-gradient-to-l from-blue-50/50 to-transparent border-slate-100"}`}>
               <div className="flex items-center gap-3 mb-3">
@@ -2168,6 +2243,7 @@ export default function WorkPlan() {
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path d="M15 18l-6-6 6-6" /></svg>
             </button>
           </div>
+          </>)}
         </main>
       </div>
 
