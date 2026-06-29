@@ -236,8 +236,10 @@ const SECTION_GUIDANCE: Record<string, string> = {
   s7: "أضف الإطلاقات والإعلانات المخطط لها مع تحديد التاريخ والوصف لكل إطلاق.",
 };
 
-const AI_LOGO = "/brand/logo-color.svg";
-const AI_LOGO_WHITE = "/brand/logo-white.svg";
+import { BRAND } from "@/lib/brand";
+
+const AI_LOGO = BRAND.logoColor;
+const AI_LOGO_WHITE = BRAND.logoWhite;
 
 // ===== TYPES =====
 interface TableRow { [key: string]: string; }

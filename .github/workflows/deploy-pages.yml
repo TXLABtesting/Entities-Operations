@@ -1,0 +1,71 @@
+name: Deploy frontend to GitHub Pages
+
+# Builds the Vite frontend in demo mode (auth bypassed, no backend required) and
+# publishes it to GitHub Pages so the UI can be previewed and iterated on.
+#
+# After the first run, enable Pages once: repo Settings -> Pages -> Source:
+# "GitHub Actions". The site is served at:
+#   https://<owner>.github.io/<repo>/
+
+on:
+  push:
+    branches:
+      - claude/zealous-goodall-tjaij3
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment; cancel in-progress runs for the same ref.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      # Demo mode: no real OIDC / backend needed for a static preview.
+      VITE_AUTH_ENABLED: "false"
+      VITE_DEMO_AUTH_ENABLED: "true"
+      VITE_ANALYTICS_ENDPOINT: ""
+      VITE_ANALYTICS_WEBSITE_ID: ""
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build (base = /<repo>/ for project Pages)
+        run: pnpm build:client --base=/${{ github.event.repository.name }}/
+
+      - name: Add SPA fallback (client-side routing on 404)
+        run: cp dist/public/index.html dist/public/404.html
+
+      - name: Disable Jekyll processing
+        run: touch dist/public/.nojekyll
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

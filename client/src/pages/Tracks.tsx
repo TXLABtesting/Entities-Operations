@@ -4,9 +4,10 @@ import {
   LayoutGrid, Sparkles, Bell, CircleDot, ArrowUpDown, Database,
   Route, Settings2, FileText, Building2, BarChart3, Clock
 } from "lucide-react";
+import { BRAND } from "@/lib/brand";
 
-const AI_LOGO = "/brand/logo-color.svg";
-const AI_LOGO_WHITE = "/brand/logo-white.svg";
+const AI_LOGO = BRAND.logoColor;
+const AI_LOGO_WHITE = BRAND.logoWhite;
 
 interface MenuItem {
   id: string;

@@ -3,9 +3,10 @@ import { useEffect, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 
 import { TeamRegistration, checkTeamRegistrationComplete } from "@/components/TeamRegistration";
+import { BRAND } from "@/lib/brand";
 
-const AI_LOGO = "/brand/logo-color.svg";
-const AI_LOGO_WHITE = "/brand/logo-white.svg";
+const AI_LOGO = BRAND.logoColor;
+const AI_LOGO_WHITE = BRAND.logoWhite;
 
 // Professional detailed SVG icons for each track
 const OperationsIcon = () => (

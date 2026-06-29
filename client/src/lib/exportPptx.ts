@@ -39,7 +39,8 @@ const LIGHT_GRAY = "F5F8FC";
 const DARK_TEXT = "1A1A2E";
 
 // Logo URL
-const AI_LOGO = "/brand/logo.png";
+import { BRAND } from "@/lib/brand";
+const AI_LOGO = BRAND.logoPng;
 
 function addBrandedSlide(pptx: PptxGenJS, title: string): PptxGenJS.Slide {
   const slide = pptx.addSlide();

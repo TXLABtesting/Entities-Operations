@@ -1,9 +1,10 @@
 import { Link } from "wouter";
 import { useEffect, useState } from "react";
 import { ArrowLeft } from "lucide-react";
+import { BRAND } from "@/lib/brand";
 
-const AI_LOGO_SVG = "/brand/logo-white.svg";
-const LANDING_BG = "/brand/landing.webp";
+const AI_LOGO_SVG = BRAND.logoWhite;
+const LANDING_BG = BRAND.landing;
 
 export default function Home() {
   const [loaded, setLoaded] = useState(false);

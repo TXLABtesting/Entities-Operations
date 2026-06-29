@@ -35,8 +35,10 @@ const PHASES = [
   { num: "8", title: "التحسين والتوسع في التطبيق", date: "مارس – مايو 2028" },
 ];
 
-const AI_LOGO = "/brand/logo-color.svg";
-const AI_LOGO_WHITE = "/brand/logo-white.svg";
+import { BRAND } from "@/lib/brand";
+
+const AI_LOGO = BRAND.logoColor;
+const AI_LOGO_WHITE = BRAND.logoWhite;
 
 const OPS_COLUMNS = [
   { key: "taskName", label: "المهمة/العملية/الخدمة" },
