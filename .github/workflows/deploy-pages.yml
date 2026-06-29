@@ -45,12 +45,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # Enables Pages automatically (no manual Settings -> Pages toggle needed).
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
-        with:
-          enablement: true
-
       - name: Build (base = /<repo>/ for project Pages)
         run: pnpm build:client --base=/${{ github.event.repository.name }}/
 
