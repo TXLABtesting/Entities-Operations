@@ -155,37 +155,49 @@ function saveSelectedPaths(paths: number[]) {
   localStorage.setItem(SELECTED_PATHS_KEY, JSON.stringify(paths));
 }
 
-// Calculate track completion percentage from saved data
+// Determine track completion from saved data using meaningful milestones, so a
+// track is only "completed" when all of its applicable steps are genuinely done
+// — not when a single cell happens to be filled.
 function getTrackCompletion(trackId: number): { percent: number; status: "empty" | "in-progress" | "completed" } {
   const key = `workplan_track_${trackId}_v2`;
   const raw = localStorage.getItem(key);
   if (!raw) return { percent: 0, status: "empty" };
   try {
     const data = JSON.parse(raw);
-    const fields = data.fields || {};
-    const tables = data.tables || {};
-    // Count filled fields
-    const fieldKeys = Object.keys(fields);
-    const filledFields = fieldKeys.filter((k) => fields[k] && fields[k].trim() !== "").length;
-    // Count table rows with data
-    const tableKeys = Object.keys(tables);
-    let tableScore = 0;
-    let tableTotal = 0;
-    tableKeys.forEach((k) => {
-      const rows = tables[k] || [];
-      rows.forEach((row: Record<string, string>) => {
-        const vals = Object.values(row);
-        tableTotal += vals.length;
-        tableScore += vals.filter((v) => v && String(v).trim() !== "").length;
-      });
-    });
-    // Total score
-    const totalPossible = Math.max(fieldKeys.length + tableTotal, 1);
-    const totalFilled = filledFields + tableScore;
-    const percent = Math.min(Math.round((totalFilled / totalPossible) * 100), 100);
-    if (percent === 0) return { percent: 0, status: "empty" };
-    if (percent >= 90) return { percent, status: "completed" };
-    return { percent, status: "in-progress" };
+    const f: Record<string, string> = data.fields || {};
+    const t: Record<string, Array<Record<string, string>>> = data.tables || {};
+    const has = (v?: string) => !!v && String(v).trim() !== "";
+    const trackName = tracks.find((tk) => tk.id === trackId)?.name || "";
+
+    // Tracks 3 & 4 hide the operations/targets sections.
+    const hasOpsSections = ![3, 4].includes(trackId);
+
+    // Milestones (each ~ one "step" being meaningfully done)
+    const milestones: boolean[] = [];
+    // 1) Contact / identity
+    milestones.push(has(f.entity) && has(f.preparer) && has(f.email) && has(f.phone));
+    // 2) Projects & initiatives — at least one real row (ignore the auto-filled track name)
+    milestones.push((t.tblExisting || []).some((r) => Object.entries(r).some(([k, v]) => has(v) && !(k === "track" && v === trackName))));
+    if (hasOpsSections) {
+      // 3) Operations — at least one row with name + core assessment
+      milestones.push((t.tblOps || []).some((r) => has(r.taskName) && has(r.eligibility) && has(r.readiness)));
+      // 4) Targets & results
+      milestones.push((has(f.outcome1) || has(f.output1)) && has(f.aiModelsCount));
+    }
+    // 5) Timeline — at least one phase entry
+    const phaseEntries = data.phaseEntries || {};
+    milestones.push(Object.values(phaseEntries).some((arr: any) => Array.isArray(arr) && arr.some((e: any) => has(e?.desc))));
+
+    const done = milestones.filter(Boolean).length;
+    const total = milestones.length;
+
+    // Any data at all? (otherwise empty)
+    const anyData = Object.values(f).some(has) || Object.values(t).some((rows) => rows.some((r) => Object.values(r).some(has)));
+    if (!anyData) return { percent: 0, status: "empty" };
+
+    const percent = Math.round((done / total) * 100);
+    if (done === total) return { percent: 100, status: "completed" };
+    return { percent: Math.max(percent, 5), status: "in-progress" };
   } catch {
     return { percent: 0, status: "empty" };
   }
@@ -346,22 +358,22 @@ src={AI_LOGO}
                     {track.desc}
                   </p>
 
-                  {/* Status pill */}
-                  <div className={`mt-5 inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full ${statusMeta.cls}`}>
-                    <span className={`w-1.5 h-1.5 rounded-full ${active ? "bg-current" : "bg-slate-300"}`} />
-                    {statusMeta.label}
+                  {/* Status + CTA pinned to the bottom (equal-height cards) */}
+                  <div className="mt-auto w-full pt-5 flex flex-col items-center gap-3">
+                    <div className={`inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full ${statusMeta.cls}`}>
+                      <span className={`w-1.5 h-1.5 rounded-full ${active ? "bg-current" : "bg-slate-300"}`} />
+                      {statusMeta.label}
+                    </div>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); selectTrack(track.id); }}
+                      className={`w-full inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-[12.5px] font-bold transition-all active:scale-[0.98] ${
+                        active ? "bg-blue-600 text-white hover:bg-blue-500 shadow-sm shadow-blue-500/20" : "bg-blue-50 text-blue-700 hover:bg-blue-100"
+                      }`}
+                    >
+                      {statusMeta.cta}
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path d="M15 18l-6-6 6-6" /></svg>
+                    </button>
                   </div>
-
-                  {/* CTA */}
-                  <button
-                    onClick={(e) => { e.stopPropagation(); selectTrack(track.id); }}
-                    className={`mt-3 w-full inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-[12.5px] font-bold transition-all active:scale-[0.98] ${
-                      active ? "bg-blue-600 text-white hover:bg-blue-500 shadow-sm shadow-blue-500/20" : "bg-blue-50 text-blue-700 hover:bg-blue-100"
-                    }`}
-                  >
-                    {statusMeta.cta}
-                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path d="M15 18l-6-6 6-6" /></svg>
-                  </button>
                 </div>
               );
             })}
