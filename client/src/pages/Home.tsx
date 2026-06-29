@@ -72,7 +72,7 @@ export default function Home() {
                 <img
                   alt="مشروع الذكاء الاصطناعي المساعد"
                   onError={() => setLogoOk(false)}
-                  className="relative w-[320px] sm:w-[440px] md:w-[540px] lg:w-[600px] h-auto object-contain drop-shadow-2xl"
+                  className="relative w-[380px] sm:w-[520px] md:w-[660px] lg:w-[760px] h-auto object-contain drop-shadow-2xl"
                   src={AI_LOGO_SVG}
                 />
               ) : (

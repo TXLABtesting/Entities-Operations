@@ -300,13 +300,20 @@ src={AI_LOGO}
           {/* Grid: 5 cards in a row on large screens, 3 on medium, 2 on small */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-5">
             {tracks.map((track, idx) => {
-              const isSelected = selectedTracks.includes(track.id);
+              const stat = trackStats[idx] || { percent: 0, status: "empty" as const };
+              const active = stat.status !== "empty";
+              const statusMeta =
+                stat.status === "completed"
+                  ? { label: "مكتمل", cls: "bg-blue-50 text-blue-700", cta: "مراجعة" }
+                  : stat.status === "in-progress"
+                  ? { label: `قيد التعبئة · ${stat.percent}%`, cls: "bg-blue-50 text-blue-600", cta: "متابعة التعبئة" }
+                  : { label: "لم يبدأ", cls: "bg-slate-100 text-slate-400", cta: "ابدأ التعبئة" };
               return (
                 <div
                   key={track.id}
                   onClick={() => selectTrack(track.id)}
                   className={`group relative flex flex-col items-center text-center p-5 sm:p-6 rounded-3xl bg-white border transition-all duration-300 hover:-translate-y-1 active:scale-[0.99] cursor-pointer h-full ${
-                    isSelected
+                    active
                       ? "border-blue-300 ring-1 ring-blue-200 shadow-[0_12px_28px_-10px_rgba(37,99,235,0.35)]"
                       : "border-slate-100 shadow-[0_6px_22px_-12px_rgba(15,23,42,0.18)] hover:shadow-[0_14px_30px_-12px_rgba(15,23,42,0.22)]"
                   } ${loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
@@ -319,13 +326,16 @@ src={AI_LOGO}
 
                   {/* Icon container */}
                   <div className={`relative w-16 h-16 sm:w-[68px] sm:h-[68px] rounded-2xl flex items-center justify-center mb-5 transition-all duration-300 ${
-                    isSelected
+                    active
                       ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30"
                       : "bg-slate-50 text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-500"
                   }`}>
-                    <div className="relative z-10">
-                      {track.icon}
-                    </div>
+                    {stat.status === "completed" && (
+                      <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-sm">
+                        <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3}><path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                      </span>
+                    )}
+                    <div className="relative z-10">{track.icon}</div>
                   </div>
 
                   {/* Text content */}
@@ -337,27 +347,32 @@ src={AI_LOGO}
                   </p>
 
                   {/* Status pill */}
-                  <div className={`mt-5 inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full transition-colors ${
-                    isSelected ? "bg-blue-50 text-blue-600" : "bg-slate-50 text-slate-400 group-hover:bg-slate-100"
-                  }`}>
-                    {isSelected ? (
-                      <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}><path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                    ) : (
-                      <span className="w-3 h-3 rounded-full border-[1.5px] border-current" />
-                    )}
-                    {isSelected ? "مختار" : "غير مختار"}
+                  <div className={`mt-5 inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full ${statusMeta.cls}`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${active ? "bg-current" : "bg-slate-300"}`} />
+                    {statusMeta.label}
                   </div>
+
+                  {/* CTA */}
+                  <button
+                    onClick={(e) => { e.stopPropagation(); selectTrack(track.id); }}
+                    className={`mt-3 w-full inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-[12.5px] font-bold transition-all active:scale-[0.98] ${
+                      active ? "bg-blue-600 text-white hover:bg-blue-500 shadow-sm shadow-blue-500/20" : "bg-blue-50 text-blue-700 hover:bg-blue-100"
+                    }`}
+                  >
+                    {statusMeta.cta}
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path d="M15 18l-6-6 6-6" /></svg>
+                  </button>
                 </div>
               );
             })}
           </div>
 
-          {/* Selection summary — dotted connector + count pill */}
+          {/* Progress summary — dotted connector + completed count */}
           <div className="hidden xl:flex items-center justify-center gap-0 mt-8">
             <span className="flex-1 max-w-[180px] border-t border-dashed border-slate-300" />
             <div className="mx-3 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-slate-200 shadow-sm">
-              <span className={`w-2 h-2 rounded-full ${selectedTracks.length ? "bg-blue-500" : "bg-slate-300"}`} />
-              <span className="text-[12px] font-bold text-slate-600">{selectedTracks.length} من {tracks.length} مسارات مختارة</span>
+              <span className={`w-2 h-2 rounded-full ${trackStats.some((s) => s.status !== "empty") ? "bg-blue-500" : "bg-slate-300"}`} />
+              <span className="text-[12px] font-bold text-slate-600">{trackStats.filter((s) => s.status === "completed").length} من {tracks.length} مسارات مكتملة</span>
             </div>
             <span className="flex-1 max-w-[180px] border-t border-dashed border-slate-300" />
           </div>
