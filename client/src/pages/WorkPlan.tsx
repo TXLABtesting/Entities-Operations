@@ -4,6 +4,7 @@ import { exportToExcel } from "@/lib/exportExcel";
 import { exportToPptx } from "@/lib/exportPptx";
 import { SearchableSelect } from "@/components/SearchableSelect";
 import ReadinessReview from "@/components/ReadinessReview";
+import BulkUpload from "@/components/BulkUpload";
 import federalServicesData from "@/data/federalServices.json";
 import servicePackagesData from "@/data/servicePackages.json";
 import federalSubServicesData from "@/data/federalSubServices.json";
@@ -118,6 +119,7 @@ const ENTITY_EMAIL_DOMAINS: { [key: string]: string } = {
 
 
 const ALL_SECTIONS = [
+  { id: "bulk", name: "الرفع المجمّع", icon: "M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" },
   { id: "s2", name: "المشاريع والمبادرات", icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" },
   { id: "s4", name: "العمليات والدعم المؤسسي", icon: "M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" },
   { id: "s5", name: "المستهدفات والنتائج المتوقعة", icon: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" },
@@ -1901,8 +1903,33 @@ export default function WorkPlan() {
 
 
 
+  // Bulk import: append uploaded operation rows into tblOps (non-destructive)
+  const importBulkOps = (rows: Record<string, string>[]) => {
+    const currentTrackName = TRACKS[trackId - 1] || TRACKS[0];
+    setFormState((prev) => {
+      const existing = (prev.tables.tblOps || []).filter((r) => Object.values(r).some((v) => v && String(v).trim()));
+      const stamped = rows.map((r) => ({ ...r, relatedTrack: currentTrackName, sector: r.sector || prev.fields.entity || "" }));
+      const next = { ...prev, tables: { ...prev.tables, tblOps: [...existing, ...stamped] } };
+      saveState(trackId, next);
+      return next;
+    });
+    showToast(`تم استيراد ${rows.length} عملية إلى الجدول`);
+  };
+
+  const renderBulkUpload = () => (
+    <div className="space-y-6">
+      {renderGuidance("ارفع بيانات العمليات دفعة واحدة عبر قالب Excel جاهز، ثم تحقّق من جاهزيتها قبل الاعتماد.")}
+      <BulkUpload
+        onImport={importBulkOps}
+        onReview={() => setReadinessOpen(true)}
+        currentCount={(formState.tables.tblOps || []).filter((r) => r.taskName && r.taskName.trim()).length}
+      />
+    </div>
+  );
+
   // Map section IDs to their renderers
   const SECTION_RENDERER_MAP: Record<string, () => React.ReactNode> = {
+    bulk: renderBulkUpload,
     s2: renderSection2,
     s4: renderSection4,
     s5: renderSection5,
