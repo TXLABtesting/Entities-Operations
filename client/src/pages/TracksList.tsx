@@ -249,51 +249,35 @@ export default function TracksList() {
         )}
       </div>
 
-      {/* Header - Both logos */}
-      <header className="relative z-10 px-5 sm:px-8 pt-5 pb-3">
-        <div className="flex items-center justify-between">
-          {/* Right: AI Logo */}
-          <img
-            alt="مشروع الذكاء الاصطناعي المساعد"
-            className="h-16 sm:h-24 object-contain"
-src={AI_LOGO}
-           />
-          {/* Center spacer */}
-          <div className="flex items-center gap-2"><Link href="/" className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all text-xs font-medium ${
-              "text-slate-500 hover:text-slate-700 hover:bg-slate-100"
-            }`}>
-              <ArrowLeft className="w-3.5 h-3.5" />
-              رجوع
-            </Link>
-          </div>
-          {/* Left: spacer for balance */}
-          <div className="h-16 sm:h-24 w-16 sm:w-24" />
+      {/* Header — constrained to the cards' width */}
+      <div className="relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-10 xl:px-16 pt-5 pb-6">
+        {/* return (right) + logo (left) */}
+        <div className="flex items-center justify-between mb-6">
+          <Link href="/" className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all text-xs font-medium text-slate-500 hover:text-slate-700 hover:bg-slate-100">
+            <ArrowLeft className="w-3.5 h-3.5" />
+            رجوع
+          </Link>
+          <img alt="مشروع الذكاء الاصطناعي المساعد" className="h-10 sm:h-12 object-contain" src={AI_LOGO} />
         </div>
-      </header>
 
-      {/* Title */}
-      <div className={`relative z-10 flex flex-col items-center gap-1 px-4 pt-1 pb-3 transition-all duration-700 ${loaded ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"}`}>
-        <h1 className={`text-lg sm:text-xl font-bold tracking-tight ${"text-[#0a1628]"}`}>
-          مشروع الذكاء الاصطناعي المساعد
-        </h1>
-      </div>
-
-      {/* Team Registration button - prominent */}
-      <div className={`relative z-10 flex items-center justify-center px-4 pb-5 transition-all duration-700 delay-100 ${loaded ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"}`}>
-        <button
-          onClick={() => setShowTeamReg(true)}
-          className={`flex items-center gap-3 px-8 py-4 rounded-2xl text-base font-bold transition-all active:scale-[0.97] shadow-lg hover:shadow-xl hover:scale-[1.02] ${
-            "bg-blue-600 text-white hover:bg-blue-500 shadow-blue-500/25"
-          }`}
-        >
-          <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-            <circle cx="9" cy="7" r="4" />
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-          </svg>
-          تسجيل فرق العمل
-        </button>
+        {/* title (right) + primary action beside it */}
+        <div className={`flex flex-wrap items-center gap-4 transition-all duration-700 ${loaded ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"}`}>
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#0a1628]">
+            مشروع الذكاء الاصطناعي المساعد
+          </h1>
+          <button
+            onClick={() => setShowTeamReg(true)}
+            className="flex items-center gap-2.5 px-6 py-3 rounded-xl text-sm font-bold transition-all active:scale-[0.97] shadow-lg hover:shadow-xl hover:scale-[1.02] bg-blue-600 text-white hover:bg-blue-500 shadow-blue-500/25"
+          >
+            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+            تسجيل فرق العمل
+          </button>
+        </div>
       </div>
 
       {/* Team Registration Modal */}

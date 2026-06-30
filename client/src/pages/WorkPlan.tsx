@@ -2131,13 +2131,6 @@ export default function WorkPlan() {
         {/* Horizontal step bar — only in manual mode */}
         {entryChoice === "manual" && (
         <div className="bg-white border border-slate-200 shadow-sm rounded-2xl p-2.5 flex items-center gap-3 overflow-x-auto">
-          {/* return to tracks */}
-          <div className="flex items-center gap-1.5 flex-shrink-0">
-            <Link href="/tracks-list" className="inline-flex items-center gap-1 text-[12px] px-2.5 py-2 text-slate-500 hover:text-slate-800 whitespace-nowrap">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-              المسارات
-            </Link>
-          </div>
           {/* section pills */}
           <div className="flex items-center gap-2 flex-1 min-w-0">
             {SECTIONS.map((sec, idx) => (
@@ -2193,12 +2186,15 @@ export default function WorkPlan() {
           {/* Step Navigation */}
           <div className={`sticky bottom-3 sm:bottom-5 mt-5 sm:mt-6 backdrop-blur-xl border rounded-2xl shadow-2xl p-3 sm:p-4 flex items-center gap-3 z-30 ${"bg-white/95 border-slate-200 shadow-slate-200/50"}`}>
             <button
-              onClick={() => setCurrentSection(Math.max(0, currentSection - 1))}
-              disabled={currentSection === 0}
-              className={`inline-flex items-center gap-2 px-5 py-3 border rounded-xl text-sm font-bold disabled:opacity-25 disabled:cursor-not-allowed transition-all active:scale-[0.97] ${"bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-800"}`}
+              onClick={() => {
+                if (currentSection === 0) { navigate("/tracks-list"); return; }
+                setCurrentSection(currentSection - 1);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className={`inline-flex items-center gap-2 px-5 py-3 border rounded-xl text-sm font-bold transition-all active:scale-[0.97] ${"bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-800"}`}
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path d="M9 18l6-6-6-6" /></svg>
-              السابق
+              {currentSection === 0 ? "المسارات" : "السابق"}
             </button>
             <div className="flex-1 text-center min-w-0 hidden sm:block">
               <p className={`text-xs sm:text-sm font-bold truncate ${"text-slate-800"}`}>{SECTIONS[currentSection].name}</p>
