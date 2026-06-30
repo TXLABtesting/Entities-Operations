@@ -2129,16 +2129,16 @@ export default function WorkPlan() {
         {/* Horizontal step bar — only in manual mode */}
         {entryChoice === "manual" && (
         <div className="bg-white border border-slate-200 shadow-sm rounded-2xl p-2.5 flex items-center gap-3 overflow-x-auto">
-          {/* progress ring */}
-          <div className="relative w-11 h-11 flex-shrink-0">
-            <svg className="w-11 h-11 -rotate-90" viewBox="0 0 44 44">
-              <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(0,0,0,0.06)" strokeWidth="4" />
-              <circle cx="22" cy="22" r="18" fill="none" stroke="#2563eb" strokeWidth="4" strokeLinecap="round"
-                strokeDasharray={`${((currentSection + 1) / SECTIONS.length) * 113} 113`} className="transition-all duration-700" />
-            </svg>
-            <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-blue-600">
-              {Math.round(((currentSection + 1) / SECTIONS.length) * 100)}%
-            </span>
+          {/* quick links (return + review) */}
+          <div className="flex items-center gap-1.5 flex-shrink-0">
+            <Link href={`/review/${trackId}`} className="inline-flex items-center gap-1.5 text-[12px] rounded-xl px-3 py-2 font-bold bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 whitespace-nowrap">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+              مراجعة
+            </Link>
+            <Link href="/tracks-list" className="inline-flex items-center gap-1 text-[12px] px-2.5 py-2 text-slate-500 hover:text-slate-800 whitespace-nowrap">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+              المسارات
+            </Link>
           </div>
           {/* section pills */}
           <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -2157,16 +2157,16 @@ export default function WorkPlan() {
               </button>
             ))}
           </div>
-          {/* quick links */}
-          <div className="flex items-center gap-1.5 flex-shrink-0">
-            <Link href={`/review/${trackId}`} className="inline-flex items-center gap-1.5 text-[12px] rounded-xl px-3 py-2 font-bold bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 whitespace-nowrap">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-              مراجعة
-            </Link>
-            <Link href="/tracks-list" className="inline-flex items-center gap-1 text-[12px] px-2.5 py-2 text-slate-500 hover:text-slate-800 whitespace-nowrap">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-              المسارات
-            </Link>
+          {/* progress ring */}
+          <div className="relative w-11 h-11 flex-shrink-0">
+            <svg className="w-11 h-11 -rotate-90" viewBox="0 0 44 44">
+              <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(0,0,0,0.06)" strokeWidth="4" />
+              <circle cx="22" cy="22" r="18" fill="none" stroke="#2563eb" strokeWidth="4" strokeLinecap="round"
+                strokeDasharray={`${((currentSection + 1) / SECTIONS.length) * 113} 113`} className="transition-all duration-700" />
+            </svg>
+            <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-blue-600">
+              {Math.round(((currentSection + 1) / SECTIONS.length) * 100)}%
+            </span>
           </div>
         </div>
         )}
