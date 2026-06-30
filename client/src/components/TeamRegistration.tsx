@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { SearchableSelect } from "@/components/SearchableSelect";
-import { Users, Building2, UserCheck, Phone, Mail, Briefcase, Plus, Trash2, ChevronLeft, ChevronRight, Save, AlertCircle, CheckCircle2, Shield, RotateCcw, Pencil } from "lucide-react";
+import { Users, Building2, UserCheck, Phone, Mail, Briefcase, Plus, Trash2, ChevronLeft, ChevronRight, Save, AlertCircle, CheckCircle2, Shield, RotateCcw } from "lucide-react";
 
 // ===== CONSTANTS =====
 const TRACKS = [
@@ -153,12 +153,17 @@ function saveTeamData(data: TeamData) {
 }
 
 // ===== VALIDATION =====
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_RE = /^\+?[\d\s-]{7,}$/;
+
 function validateGeneralTab(data: TeamData): string[] {
   const errors: string[] = [];
   if (!data.entity) errors.push("اسم الجهة الاتحادية");
   if (!data.preparer.trim()) errors.push("اسم معد الخطة");
   if (!data.phone.trim()) errors.push("رقم الهاتف");
+  else if (!PHONE_RE.test(data.phone.trim())) errors.push("رقم هاتف صحيح");
   if (!data.email.trim()) errors.push("البريد الإلكتروني");
+  else if (!EMAIL_RE.test(data.email.trim())) errors.push("بريد إلكتروني صحيح");
   return errors;
 }
 
@@ -342,15 +347,6 @@ export function TeamRegistration({ onClose }: TeamRegistrationProps) {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {/* Edit button - allows editing after save */}
-            <button
-              onClick={() => { setActiveTab("general"); setShowErrors(false); }}
-              className="inline-flex items-center gap-1.5 text-[11px] font-medium px-3 py-2 rounded-lg bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 transition-all active:scale-[0.97]"
-              title="تعديل البيانات"
-            >
-              <Pencil className="w-3.5 h-3.5" />
-              تعديل
-            </button>
             {/* Reset button */}
             <button
               onClick={() => setShowResetConfirm(true)}

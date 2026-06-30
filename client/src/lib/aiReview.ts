@@ -32,16 +32,34 @@ const FORMAT = ((import.meta.env.VITE_AI_API_FORMAT as string | undefined) || "o
 
 export const aiReviewEnabled = !!API_URL;
 
-const SYSTEM_PROMPT = `أنت مدقّق جاهزية لأتمتة العمليات الحكومية ("agentification").
+const SYSTEM_PROMPT = `أنت مدقّق جاهزية لأتمتة العمليات الحكومية ("agentification") في حكومة دولة الإمارات.
 تتلقى بيانات نموذج خطة عمل لجهة اتحادية ونتائج فحص آلي مبدئي.
-مهمتك: التأكد من أن البيانات كافية وواضحة لبناء وكلاء ذكاء اصطناعي ينفّذون هذه العمليات،
-بحيث لا نحتاج للرجوع إلى الجهة بأسئلة إضافية.
-ركّز على: اكتمال خطوات العملية، وضوح القواعد (استبدل العبارات العامة مثل "التحقق/المراجعة" بسؤال محدد)،
-المدخلات والمخرجات ومصادر البيانات والأنظمة، النماذج/القوالب، الأرشفة، والمخاطر/الاستثناءات.
-التزم بمنطق خوارزمية الأولوية (volume, effort, impact, data, api, risk).
-أعد ردك بصيغة JSON فقط بالشكل:
-{"summary": "ملخص عربي موجز", "findings": [{"category":"clarity","severity":"warning","title":"...","detail":"...","location":"..."}]}
-حيث category ∈ [completeness, agentReadiness, clarity, consistency, artifacts] و severity ∈ [blocker, warning, suggestion].`;
+هدفك: الحكم على مدى كفاية ووضوح البيانات لبناء وكلاء ذكاء اصطناعي ينفّذون هذه العمليات،
+بحيث لا تحتاج الجهة لأي رجوع لاحق بأسئلة إضافية. أنت من يقرّر درجة الجاهزية، لا أحد غيرك.
+
+التزم بمنطق خوارزمية الأولوية وقيّم كل عملية على عواملها الستة:
+ • الحجم (volume): كثافة الاستخدام/التكرار (usageIntensity).
+ • الجهد (effort): مستوى التعقيد والخطوات اليدوية (complexityLevel, subActivities).
+ • الأثر (impact): الأثر على المتعاملين/الجهة (impactLevel).
+ • البيانات (data): الجاهزية وأهلية البيانات (readiness, eligibility) ومصادرها.
+ • الأنظمة/الربط (api): مستوى الأتمتة الحالي والنظام المستخدم (automationLevel, automationSystem) وإمكانية الربط البرمجي.
+ • المخاطر (risk): الاستثناءات والحالات الحرجة وأثر الخطأ.
+
+افحص لكل عملية اكتمال: الخطوات التفصيلية، المدخلات، المخرجات/النتائج، مصادر البيانات، الأنظمة،
+النماذج/القوالب المستخدمة، آلية الأرشفة، القواعد والاستثناءات والمخاطر.
+
+اكتشف الصياغات العامة أو المبهمة (مثل: "التحقق"، "المراجعة"، "حسب الحاجة"، "عند الاقتضاء"، "متابعة")
+وحوّلها إلى سؤال توضيحي محدّد قابل للتنفيذ (مَن؟ وفق أي قاعدة؟ ما الحد/المعيار؟).
+أبلِغ صراحةً عن أي نقص في: المدخلات، المخرجات، القوالب/النماذج، الأرشفة، أو ربط الأنظمة.
+
+أعد درجة جاهزية إجمالية من 0 إلى 100 تعكس مدى إمكانية الانطلاق بالأتمتة دون رجوع للجهة،
+مع قائمة نقاط محدّدة مرتّبة بالأولوية وملخّص عربي موجز.
+أعِد ردك بصيغة JSON فقط، دون أي نص خارج الـ JSON، بالشكل:
+{"overallScore": 0-100, "ready": true|false, "summary": "ملخص عربي موجز",
+ "findings": [{"category":"clarity","severity":"warning","title":"عنوان موجز","detail":"الإجراء المطلوب بدقة","location":"موقع الحقل/العملية"}]}
+حيث category ∈ [completeness, agentReadiness, clarity, consistency, artifacts]
+و severity ∈ [blocker (يمنع الاعتماد), warning (نقص مؤثر), suggestion (تحسين)].
+اجعل "ready" = true فقط إذا لم يتبقَّ أي blocker وكانت الدرجة ≥ 85.`;
 
 function buildUserPayload(plan: PlanState, base: ReadinessReport): string {
   const ops = (plan.tables.tblOps || []).filter((r) => r.taskName || r.subActivities);
@@ -101,7 +119,7 @@ async function callGateway(system: string, user: string, signal?: AbortSignal): 
   return data?.choices?.[0]?.message?.content ?? "";
 }
 
-function parseAi(raw: string): { summary?: string; findings: Finding[] } {
+function parseAi(raw: string): { summary?: string; findings: Finding[]; overallScore?: number; ready?: boolean } {
   try {
     const start = raw.indexOf("{");
     const end = raw.lastIndexOf("}");
@@ -119,7 +137,14 @@ function parseAi(raw: string): { summary?: string; findings: Finding[] } {
             location: f.location ? String(f.location) : undefined,
           }))
       : [];
-    return { summary: typeof parsed.summary === "string" ? parsed.summary : undefined, findings };
+    const rawScore = Number(parsed.overallScore);
+    const overallScore = Number.isFinite(rawScore) ? Math.max(0, Math.min(100, Math.round(rawScore))) : undefined;
+    return {
+      summary: typeof parsed.summary === "string" ? parsed.summary : undefined,
+      findings,
+      overallScore,
+      ready: typeof parsed.ready === "boolean" ? parsed.ready : undefined,
+    };
   } catch {
     return { findings: [] };
   }
@@ -143,7 +168,7 @@ export async function reviewReadiness(plan: PlanState, opts?: { trackName?: stri
 
   try {
     const raw = await callGateway(SYSTEM_PROMPT, buildUserPayload(plan, base), opts?.signal);
-    const { summary, findings } = parseAi(raw);
+    const { summary, findings, overallScore, ready } = parseAi(raw);
 
     // Merge AI findings, de-duplicating against rule findings by title+location.
     const seen = new Set(base.findings.map((f) => `${f.title}|${f.location || ""}`));
@@ -151,10 +176,22 @@ export async function reviewReadiness(plan: PlanState, opts?: { trackName?: stri
 
     const order: Record<string, number> = { blocker: 0, warning: 1, suggestion: 2 };
     const merged = [...base.findings, ...fresh].sort((a, b) => order[a.severity] - order[b.severity]);
+    const counts = merged.reduce(
+      (c, f) => ((c[f.severity] = (c[f.severity] || 0) + 1), c),
+      { blocker: 0, warning: 0, suggestion: 0 } as Record<string, number>,
+    );
+
+    // The AI is the evaluator: trust its score/verdict when present, otherwise
+    // keep the deterministic engine's result as a safe fallback.
+    const finalScore = overallScore ?? base.overallScore;
+    const finalReady = (ready ?? base.ready) && counts.blocker === 0;
 
     return {
       ...base,
       findings: merged,
+      counts: { blocker: counts.blocker, warning: counts.warning, suggestion: counts.suggestion },
+      overallScore: finalScore,
+      ready: finalReady,
       summary: summary || base.summary,
       aiUsed: true,
       aiFindings: fresh,

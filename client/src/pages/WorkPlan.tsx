@@ -1936,6 +1936,15 @@ export default function WorkPlan() {
     );
     return (
       <section className="bg-white border border-slate-200 shadow-sm rounded-2xl p-6 sm:p-10">
+        <div className="flex justify-start mb-2">
+          <button
+            onClick={() => navigate("/tracks-list")}
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-[13px] font-bold border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-800 transition-all active:scale-[0.97]"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path d="M9 18l6-6-6-6" /></svg>
+            المسارات
+          </button>
+        </div>
         <div className="text-center mb-8">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-800">كيف تريد إدخال البيانات؟</h2>
           <p className="text-[13px] text-slate-500 mt-2">اختر الطريقة المناسبة — يمكنك التبديل لاحقاً.</p>
@@ -1962,25 +1971,40 @@ export default function WorkPlan() {
   };
 
   const renderBulkMode = () => (
-    <section className="bg-white border border-slate-200 shadow-sm rounded-2xl p-5 sm:p-7">
-      <div className="flex items-center justify-between gap-3 mb-5">
-        <h2 className="text-lg sm:text-xl font-bold text-slate-800">الرفع المجمّع للعمليات</h2>
-        <button onClick={() => setEntryChoice("choose")} className="inline-flex items-center gap-1.5 text-[12.5px] font-bold text-slate-500 hover:text-slate-800">
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path d="M9 5l7 7-7 7" /></svg>
+    <>
+      <section className="bg-white border border-slate-200 shadow-sm rounded-2xl p-5 sm:p-7">
+        <h2 className="text-lg sm:text-xl font-bold text-slate-800 mb-5">الرفع المجمّع للعمليات</h2>
+        {renderBulkUpload()}
+      </section>
+
+      {/* Bottom bar — same pattern as the manual flow */}
+      <div className={`sticky bottom-3 sm:bottom-5 mt-5 sm:mt-6 backdrop-blur-xl border rounded-2xl shadow-2xl p-3 sm:p-4 flex items-center gap-2 sm:gap-3 z-30 ${"bg-white/95 border-slate-200 shadow-slate-200/50"}`}>
+        <button
+          onClick={() => setEntryChoice("choose")}
+          className={`inline-flex items-center gap-2 px-4 sm:px-5 py-3 border rounded-xl text-sm font-bold transition-all active:scale-[0.97] ${"bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-800"}`}
+        >
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path d="M9 18l6-6-6-6" /></svg>
           تغيير الطريقة
         </button>
-      </div>
-      {renderBulkUpload()}
-      <div className="flex flex-wrap items-center justify-end gap-2.5 mt-6 pt-5 border-t border-slate-100">
-        <button onClick={() => { setEntryChoice("manual"); setCurrentSection(0); }} className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-[13px] font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors">
-          التعديل اليدوي للبيانات
+        <div className="flex-1 text-center min-w-0 hidden sm:block">
+          <p className="text-xs sm:text-sm font-bold text-slate-800">الرفع المجمّع للعمليات</p>
+          <p className="text-[9px] sm:text-[10px] mt-0.5 text-slate-500">عبر ملف Excel</p>
+        </div>
+        <button
+          onClick={() => { setEntryChoice("manual"); setCurrentSection(0); }}
+          className="inline-flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-bold border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition-all active:scale-[0.97] flex-1 sm:flex-none justify-center"
+        >
+          التعديل اليدوي
         </button>
-        <button onClick={() => setReadinessOpen(true)} className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-[13px] font-bold bg-blue-600 text-white hover:bg-blue-500 transition-colors">
-          مراجعة الجاهزية والإنهاء
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path d="M15 18l-6-6 6-6" /></svg>
+        <button
+          onClick={() => setReadinessOpen(true)}
+          className="inline-flex items-center gap-2 px-5 sm:px-6 py-3 bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-500/20 hover:bg-blue-500 hover:shadow-blue-500/30 active:scale-[0.97] transition-all"
+        >
+          <span className="whitespace-nowrap">مراجعة الجاهزية والإنهاء</span>
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path d="M15 18l-6-6 6-6" /></svg>
         </button>
       </div>
-    </section>
+    </>
   );
 
   // Map section IDs to their renderers
