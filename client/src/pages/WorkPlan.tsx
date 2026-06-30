@@ -1909,7 +1909,9 @@ export default function WorkPlan() {
       saveState(trackId, next);
       return next;
     });
-    showToast(`تم استيراد ${rows.length} عملية إلى الجدول`);
+    showToast(`تم استيراد ${rows.length} عملية — جارٍ مراجعة الجاهزية`);
+    // Bulk path: go straight to the readiness review (score + points to fix)
+    setReadinessOpen(true);
   };
 
   const renderBulkUpload = () => (
@@ -2129,12 +2131,8 @@ export default function WorkPlan() {
         {/* Horizontal step bar — only in manual mode */}
         {entryChoice === "manual" && (
         <div className="bg-white border border-slate-200 shadow-sm rounded-2xl p-2.5 flex items-center gap-3 overflow-x-auto">
-          {/* quick links (return + review) */}
+          {/* return to tracks */}
           <div className="flex items-center gap-1.5 flex-shrink-0">
-            <Link href={`/review/${trackId}`} className="inline-flex items-center gap-1.5 text-[12px] rounded-xl px-3 py-2 font-bold bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 whitespace-nowrap">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-              مراجعة
-            </Link>
             <Link href="/tracks-list" className="inline-flex items-center gap-1 text-[12px] px-2.5 py-2 text-slate-500 hover:text-slate-800 whitespace-nowrap">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
               المسارات
@@ -2278,6 +2276,7 @@ export default function WorkPlan() {
         trackName={trackName}
         open={readinessOpen}
         onClose={() => setReadinessOpen(false)}
+        onEditManually={entryChoice === "bulk" ? () => { setReadinessOpen(false); setEntryChoice("manual"); setCurrentSection(0); } : undefined}
         onProceed={() => {
           if (hasNextTrack && nextTrackId) {
             navigate(`/workplan/${nextTrackId}`);
