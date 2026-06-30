@@ -461,11 +461,6 @@ function syncSharedDataToOtherTracks(sourceTrackId: number, sourceState: FormSta
   } catch {}
 }
 
-function validateEmail(email: string): boolean {
-  if (!email) return true;
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
 
 
 // Visual order of tracks as displayed in TracksList page
@@ -689,17 +684,12 @@ export default function WorkPlan() {
 
   // Validation
   const validateCurrentSection = (): boolean => {
-    const errors: { [key: string]: string } = {};
-    if (currentSection === 0) {
-      if (formState.fields.email && !validateEmail(formState.fields.email)) {
-        errors.email = "صيغة البريد الإلكتروني غير صحيحة";
-      }
-      if (formState.fields.phone && !/^05\d{8}$/.test(formState.fields.phone)) {
-        errors.phone = "رقم الهاتف يجب أن يبدأ بـ 05 ويتكون من 10 أرقام";
-      }
-    }
-    setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
+    // Contact details (entity/preparer/email/phone) are collected and validated
+    // in the team-registration screen, not in these work-plan steps — so step
+    // navigation must not be blocked by them. The readiness review covers the
+    // plan content itself, so each step is free to advance.
+    setValidationErrors({});
+    return true;
   };
 
   const exportJSON = () => {
