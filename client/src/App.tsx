@@ -10,6 +10,7 @@ import { authEnabled, demoAuthEnabled } from "@/auth/oidcConfig";
 import Home from "./pages/Home";
 import Tracks from "./pages/Tracks";
 import TracksList from "./pages/TracksList";
+import StartNew from "./pages/StartNew";
 import WorkPlan from "./pages/WorkPlan";
 import ReviewEdit from "./pages/ReviewEdit";
 import { AdminLayout, UsersManagement, EntitiesManagement, RolesManagement, AuditLogs } from "./pages/admin";
@@ -43,6 +44,7 @@ function ProtectedRoutes() {
         <Route path={"/"} component={Home} />
         <Route path={"/tracks"} component={Tracks} />
         <Route path={"/tracks-list"} component={TracksList} />
+        <Route path={"/start-new"} component={StartNew} />
         <Route path={"/workplan/:trackId"} component={WorkPlan} />
         <Route path={"/review/:trackId"} component={ReviewEdit} />
         <Route path={"/admin/users"}>{() => <RequireAdmin><AdminLayout><UsersManagement /></AdminLayout></RequireAdmin>}</Route>

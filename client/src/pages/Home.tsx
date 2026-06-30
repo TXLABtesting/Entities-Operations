@@ -85,15 +85,27 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Entrance Button */}
-            <Link href="/tracks-list">
-              <button className="group relative inline-flex items-center gap-3 px-12 sm:px-16 py-4 sm:py-5 rounded-2xl text-lg sm:text-xl font-bold shadow-2xl transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 hover:border-white/40 hover:shadow-white/10">
-                {/* gradient sheen on hover */}
-                <span className="absolute inset-0 rounded-2xl bg-gradient-to-r from-indigo-400/0 via-white/10 to-violet-400/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <span className="relative">الدخول</span>
-                <ArrowLeft className="relative w-5 h-5 group-hover:-translate-x-1 transition-transform text-white/70 group-hover:text-white" />
-              </button>
-            </Link>
+            {/* Entrance Buttons */}
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+              {/* Start old — existing experience */}
+              <Link href="/tracks-list">
+                <button className="group relative inline-flex items-center gap-3 px-10 sm:px-12 py-4 sm:py-5 rounded-2xl text-base sm:text-lg font-bold shadow-2xl transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 hover:border-white/40 hover:shadow-white/10">
+                  <span className="absolute inset-0 rounded-2xl bg-gradient-to-r from-indigo-400/0 via-white/10 to-violet-400/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <span className="relative">النسخة الحالية</span>
+                  <ArrowLeft className="relative w-5 h-5 group-hover:-translate-x-1 transition-transform text-white/70 group-hover:text-white" />
+                </button>
+              </Link>
+              {/* Start new — enhanced experience */}
+              <Link href="/start-new">
+                <button className="group relative inline-flex items-center gap-3 px-10 sm:px-12 py-4 sm:py-5 rounded-2xl text-base sm:text-lg font-bold shadow-2xl transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] bg-white text-[#0f1c44] border border-white/40 hover:shadow-white/20">
+                  <span className="relative inline-flex items-center gap-2">
+                    <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L23 12l-7.714 2.143L13 21l-2.286-6.857L3 12l7.714-2.143L13 3z" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                    التجربة الجديدة
+                  </span>
+                  <ArrowLeft className="relative w-5 h-5 group-hover:-translate-x-1 transition-transform text-blue-600/70 group-hover:text-blue-600" />
+                </button>
+              </Link>
+            </div>
           </div>
         </main>
 
