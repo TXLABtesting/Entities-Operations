@@ -42,19 +42,27 @@ function ScoreRing({ score }: { score: number }) {
   );
 }
 
-function FindingCard({ f }: { f: Finding }) {
+function FindingCard({ f, done, onToggle }: { f: Finding; done: boolean; onToggle: () => void }) {
   const meta = SEVERITY_META[f.severity];
   return (
-    <div className="flex gap-3 p-3.5 rounded-xl border border-slate-200 bg-white hover:border-slate-300 transition-colors">
-      <span className={`mt-1.5 w-2.5 h-2.5 rounded-full flex-shrink-0 ${meta.dot}`} />
+    <div className={`flex gap-3.5 p-4 rounded-2xl border bg-white transition-all ${done ? "border-slate-100 opacity-55" : "border-slate-200 hover:border-slate-300"}`}>
+      <button
+        onClick={onToggle}
+        aria-label="تمييز كمنجز"
+        className={`mt-0.5 w-5 h-5 rounded-md border-2 flex-shrink-0 flex items-center justify-center transition-colors ${done ? "bg-blue-600 border-blue-600 text-white" : "border-slate-300 hover:border-blue-400 bg-white"}`}
+      >
+        {done && <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3.5}><path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" /></svg>}
+      </button>
       <div className="min-w-0 flex-1">
-        <div className="flex flex-wrap items-center gap-2 mb-1">
-          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${meta.chip}`}>{meta.label}</span>
-          <span className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-slate-100 text-slate-500">{CATEGORY_LABEL[f.category]}</span>
-          <span className="text-[13px] font-bold text-slate-800">{f.title}</span>
+        <p className={`text-[14px] font-bold leading-snug ${done ? "line-through text-slate-400" : "text-slate-800"}`}>{f.title}</p>
+        <p className="text-[12.5px] leading-relaxed text-slate-500 mt-1">{f.detail}</p>
+        <div className="flex items-center gap-2 mt-2.5 flex-wrap">
+          <span className={`inline-flex items-center gap-1.5 text-[10.5px] font-bold px-2 py-0.5 rounded-md border ${meta.chip}`}>
+            <span className={`w-1.5 h-1.5 rounded-full ${meta.dot}`} />{meta.label}
+          </span>
+          <span className="text-[10.5px] font-medium px-2 py-0.5 rounded-md bg-slate-100 text-slate-500">{CATEGORY_LABEL[f.category]}</span>
+          {f.location && <span className="text-[10.5px] text-slate-400 truncate">{f.location}</span>}
         </div>
-        <p className="text-[12.5px] leading-relaxed text-slate-600">{f.detail}</p>
-        {f.location && <p className="text-[11px] text-slate-400 mt-1">↳ {f.location}</p>}
       </div>
     </div>
   );
@@ -63,9 +71,12 @@ function FindingCard({ f }: { f: Finding }) {
 export default function ReadinessReview({ plan, trackName, open, onClose, onProceed, onEditManually }: { plan: PlanState; trackName?: string; open: boolean; onClose: () => void; onProceed?: () => void; onEditManually?: () => void }) {
   const [report, setReport] = useState<EnrichedReport | null>(null);
   const [loading, setLoading] = useState(false);
+  const [done, setDone] = useState<Set<string>>(new Set());
+  const toggleDone = (id: string) => setDone((prev) => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
 
   const run = () => {
     setLoading(true);
+    setDone(new Set());
     const controller = new AbortController();
     reviewReadiness(plan, { trackName, signal: controller.signal })
       .then(setReport)
@@ -82,7 +93,7 @@ export default function ReadinessReview({ plan, trackName, open, onClose, onProc
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center p-4 sm:p-6 overflow-y-auto bg-slate-900/40 backdrop-blur-sm" dir="rtl" onClick={onClose}>
-      <div className="relative w-full max-w-2xl my-6 bg-slate-50 rounded-2xl shadow-2xl border border-slate-200" onClick={(e) => e.stopPropagation()}>
+      <div className="relative w-full max-w-3xl lg:max-w-4xl my-6 bg-slate-50 rounded-2xl shadow-2xl border border-slate-200" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="flex items-start gap-5 p-5 sm:p-6 border-b border-slate-200 bg-white rounded-t-2xl">
           {report ? <ScoreRing score={report.overallScore} /> : <div className="w-24 h-24 rounded-full bg-slate-100 animate-pulse flex-shrink-0" />}
@@ -122,7 +133,7 @@ export default function ReadinessReview({ plan, trackName, open, onClose, onProc
               <p className="text-[12px] text-slate-500 mt-1">يمكن اعتماد النموذج والمضي في الأتمتة.</p>
             </div>
           )}
-          {!loading && report?.findings.map((f) => <FindingCard key={f.id} f={f} />)}
+          {!loading && report?.findings.map((f) => <FindingCard key={f.id} f={f} done={done.has(f.id)} onToggle={() => toggleDone(f.id)} />)}
         </div>
 
         {/* Footer */}
