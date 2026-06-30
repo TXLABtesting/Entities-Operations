@@ -720,22 +720,6 @@ export default function WorkPlan() {
 
   const handleSave = () => { saveState(trackId, formState); showToast("تم حفظ النموذج بنجاح"); };
 
-  const handleImport = () => {
-    const input = document.createElement("input"); input.type = "file"; input.accept = ".json";
-    input.onchange = (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0]; if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        try {
-          const data = JSON.parse(ev.target?.result as string);
-          if (data.fields && data.tables) { setFormState(data); saveState(trackId, data); showToast("تم استيراد البيانات بنجاح"); }
-          else { showToast("ملف غير صالح"); }
-        } catch { showToast("خطأ في قراءة الملف"); }
-      };
-      reader.readAsText(file);
-    };
-    input.click();
-  };
 
   const handleReset = () => {
     if (window.confirm("هل أنت متأكد من إعادة تعيين النموذج؟")) {
@@ -810,11 +794,19 @@ export default function WorkPlan() {
   );
 
   const renderGuidance = (text: string) => (
-    <div className={`flex items-start gap-3 ${"bg-blue-50 border-blue-200/60"} border rounded-xl p-4 mb-6`}>
+    <div className={`flex items-center gap-3 ${"bg-blue-50 border-blue-200/60"} border rounded-xl p-4 mb-6`}>
       <div className={`w-7 h-7 rounded-lg ${"bg-blue-100"} flex items-center justify-center flex-shrink-0`}>
         <svg className="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
       </div>
-      <p className={`text-[12px] leading-relaxed pt-1 ${"text-slate-700"}`}>{text}</p>
+      <p className={`text-[12px] leading-relaxed flex-1 min-w-0 ${"text-slate-700"}`}>{text}</p>
+      <button
+        onClick={() => setEntryChoice("bulk")}
+        title="إدخال العمليات دفعة واحدة عبر ملف Excel"
+        className="flex-shrink-0 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[12px] font-bold bg-white border border-blue-200 text-blue-700 hover:bg-blue-100 transition-colors active:scale-[0.97]"
+      >
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+        <span className="whitespace-nowrap">الرفع المجمّع</span>
+      </button>
     </div>
   );
 
@@ -2109,11 +2101,6 @@ export default function WorkPlan() {
                 )}
               </span>
             )}
-            <button onClick={handleImport} className={`inline-flex items-center gap-1.5 px-3 sm:px-3 py-2.5 sm:py-2 rounded-lg text-xs sm:text-xs font-medium transition-all active:scale-[0.97] ${"bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 hover:text-slate-900"}`}>
-              <svg className="w-4 h-4 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m4-8l-4-4m0 0L16 8m4-4v12" /></svg>
-              <span className="hidden sm:inline">استيراد</span>
-            </button>
-
             <button onClick={() => exportToExcel(formState, trackId)} className={`inline-flex items-center gap-1.5 px-3 sm:px-3 py-2.5 sm:py-2 rounded-lg text-xs sm:text-xs font-medium transition-all active:scale-[0.97] ${"bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 hover:text-slate-900"}`}>
               <svg className="w-4 h-4 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
               <span className="hidden sm:inline">Excel</span>
