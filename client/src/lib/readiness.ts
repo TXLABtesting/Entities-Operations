@@ -93,38 +93,38 @@ const ARTIFACT_CHECKS: { id: string; re: RegExp; title: string; detail: string }
   {
     id: "inputs",
     re: /(مدخل|input|بيانات الدخل|المتطلبات)/i,
-    title: "لم تُذكر مدخلات العملية",
-    detail: "حدّد مدخلات العملية (المستندات/البيانات اللازمة للبدء) حتى يمكن للوكيل الذكي معرفة ما يحتاجه لتنفيذها.",
+    title: "أضِف مدخلات العملية",
+    detail: "حدّد المستندات أو البيانات اللازمة لبدء العملية.",
   },
   {
     id: "outputs",
     re: /(مخرج|output|نتيجة|الناتج)/i,
-    title: "لم تُذكر مخرجات العملية",
-    detail: "حدّد المخرج النهائي للعملية (القرار/المستند/الإشعار) ليتم التحقق من اكتمال الأتمتة.",
+    title: "أضِف مخرجات العملية",
+    detail: "حدّد الناتج النهائي: قرار، مستند، أو إشعار.",
   },
   {
     id: "dataSource",
     re: /(مصدر البيانات|قاعدة بيانات|نظام|database|system|api|تكامل)/i,
-    title: "لم يُذكر مصدر البيانات أو النظام",
-    detail: "اذكر مصدر البيانات أو النظام/واجهة التكامل (API) المرتبط بالعملية — وهو أساس عامل (api) في خوارزمية الأولوية.",
+    title: "حدّد مصدر البيانات أو النظام",
+    detail: "اذكر النظام أو واجهة التكامل (API) المرتبطة بالعملية.",
   },
   {
     id: "templates",
     re: /(نموذج|قالب|template|استمارة)/i,
-    title: "لم يُذكر وجود نماذج/قوالب",
-    detail: "إن كانت العملية تستخدم نماذج أو قوالب موحّدة، أرفِق أو أشِر إليها ليتعلّم الوكيل التنسيق المطلوب.",
+    title: "أرفِق النماذج أو القوالب",
+    detail: "إن استخدمت العملية قوالب موحّدة، أشِر إليها.",
   },
   {
     id: "archiving",
     re: /(أرشف|الأرشفة|حفظ السجل|توثيق|سجل)/i,
-    title: "لم تُذكر آلية الأرشفة/التوثيق",
-    detail: "وضّح كيف تُؤرشف نتائج العملية وسجلّاتها، فالأرشفة مطلوبة لإغلاق دورة الأتمتة والتدقيق لاحقاً.",
+    title: "وضّح آلية الأرشفة",
+    detail: "كيف تُحفظ نتائج العملية وسجلّاتها؟",
   },
   {
     id: "risk",
     re: /(مخاطر|استثناء|حالة خاصة|تصعيد|risk|exception)/i,
-    title: "لم تُذكر المخاطر/الاستثناءات",
-    detail: "اذكر المخاطر أو الحالات الاستثنائية ومتى يتم التصعيد لموظف بشري — عامل (risk) غير مُلتقط في النموذج حالياً.",
+    title: "حدّد المخاطر والاستثناءات",
+    detail: "اذكر الحالات الاستثنائية ومتى يتم التصعيد لموظف.",
   },
 ];
 
@@ -156,13 +156,13 @@ function analyzeOperation(row: Record<string, string>, idx: number): Finding[] {
 
   // Identity & steps -----------------------------------------------------------
   if (!filled(name)) {
-    add("completeness", "blocker", "اسم العملية مفقود", "أدخل اسم العملية/الخدمة بدقة — لا يمكن أتمتة عملية بدون تعريفها.", "name");
+    add("completeness", "blocker", "أدخل اسم العملية", "حدّد اسم العملية/الخدمة بدقة — لا أتمتة بدون تعريف.", "name");
     return out; // nothing else is meaningful without a name
   }
   if (!filled(row.subActivities)) {
-    add("agentReadiness", "warning", "لا توجد أنشطة فرعية", "صف خطوات العملية (الأنشطة الفرعية) خطوة بخطوة؛ هذه الخطوات هي ما سيقوم الوكيل الذكي بتنفيذه.", "steps");
+    add("agentReadiness", "warning", "أضِف خطوات العملية", "اذكر الأنشطة الفرعية خطوة بخطوة — هذه ما سينفّذه الوكيل.", "steps");
   } else if (row.subActivities.trim().length < 25) {
-    add("agentReadiness", "suggestion", "وصف الأنشطة مختصر جداً", "أضف تفاصيل أوضح لخطوات العملية حتى تكون قابلة للأتمتة دون تخمين.", "stepsShort");
+    add("agentReadiness", "suggestion", "وسّع وصف الخطوات", "أضِف تفاصيل أوضح حتى تكون قابلة للأتمتة دون تخمين.", "stepsShort");
   }
 
   // Algorithm factors ----------------------------------------------------------
@@ -180,12 +180,12 @@ function analyzeOperation(row: Record<string, string>, idx: number): Finding[] {
       add(
         "agentReadiness",
         "warning",
-        `«${fc.label}» غير محدد`,
-        `حدّد «${fc.label}» — وهو مدخل أساسي لعامل (${fc.factor}) في خوارزمية ترتيب الأولوية، وبدونه لا يمكن احتساب جاهزية العملية للأتمتة.`,
+        `حدِّد «${fc.label}»`,
+        `مطلوب لاحتساب جاهزية العملية للأتمتة (عامل ${fc.factor}).`,
         fc.key
       );
     } else if (isOther(row[fc.key])) {
-      add("clarity", "warning", `«${fc.label}» = أخرى دون توضيح`, `اخترت «أخرى» لـ«${fc.label}»؛ يرجى كتابة القيمة الصحيحة بوضوح.`, fc.key);
+      add("clarity", "warning", `وضّح قيمة «${fc.label}»`, `اخترت «أخرى» — اكتب القيمة الصحيحة بوضوح.`, fc.key);
     }
   }
 
@@ -295,10 +295,15 @@ export function analyzeReadiness(plan: PlanState, opts?: { trackName?: string })
     warning: allFindings.filter((f) => f.severity === "warning").length,
     suggestion: allFindings.filter((f) => f.severity === "suggestion").length,
   };
-  // Weighted overall: operations dominate readiness, contacts are a gate.
-  const weights: Record<string, number> = { contacts: 1, operations: 3, projects: 1, targets: 1.5 };
-  const wSum = sections.reduce((s, sec) => s + (weights[sec.id] || 1), 0);
-  const overallScore = Math.round(sections.reduce((s, sec) => s + sec.score * (weights[sec.id] || 1), 0) / wSum);
+  // Weighted overall over the substantive sections. Contacts are shared across
+  // all tracks (team registration) so they must NOT inflate a track's readiness.
+  const weights: Record<string, number> = { contacts: 0, operations: 3, projects: 1, targets: 1.5 };
+  const wSum = sections.reduce((s, sec) => s + (weights[sec.id] ?? 1), 0) || 1;
+  let overallScore = Math.round(sections.reduce((s, sec) => s + sec.score * (weights[sec.id] ?? 1), 0) / wSum);
+  // A blocker means the plan is fundamentally incomplete (e.g. no operations) —
+  // it can never read as "mostly ready". Hard-cap accordingly.
+  if (counts.blocker > 0) overallScore = Math.min(overallScore, 15);
+  else if (counts.warning > 0) overallScore = Math.min(overallScore, 78);
   const ready = overallScore >= READY_THRESHOLD && counts.blocker === 0;
 
   const order: Record<Severity, number> = { blocker: 0, warning: 1, suggestion: 2 };

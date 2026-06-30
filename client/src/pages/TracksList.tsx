@@ -255,7 +255,8 @@ export default function TracksList() {
       </div>
 
       {/* Header bar — within the cards' width */}
-      <div className="relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-10 xl:px-16 pb-6">
+      <div className="relative z-10 px-4 sm:px-6 lg:px-10 xl:px-16 pb-6">
+        <div className="max-w-7xl mx-auto">
         <div className={`flex items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-gradient-to-l from-slate-50 to-white shadow-[0_4px_18px_-10px_rgba(15,23,42,0.15)] px-5 sm:px-7 py-4 transition-all duration-700 delay-100 ${loaded ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-3"}`}>
           {/* right: back arrow + title */}
           <div className="flex items-center gap-3 min-w-0">
@@ -280,6 +281,7 @@ export default function TracksList() {
             <span className="hidden sm:inline">تسجيل فرق العمل</span>
             <span className="sm:hidden">الفرق</span>
           </button>
+        </div>
         </div>
       </div>
 

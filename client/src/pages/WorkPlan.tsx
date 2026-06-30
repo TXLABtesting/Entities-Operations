@@ -549,11 +549,6 @@ export default function WorkPlan() {
     }
     setFormState(saved);
     setCurrentSection(0);
-    // Show toast notification
-    setTimeout(() => {
-      setToastMsg(`\u062a\u0645 \u062a\u0639\u0628\u0626\u0629 \u0627\u0644\u0645\u0633\u0627\u0631 \u0627\u0644\u0645\u0639\u0646\u064a \u062a\u0644\u0642\u0627\u0626\u064a\u0627\u064b: ${currentTrackName}`);
-      setTimeout(() => setToastMsg(""), 3500);
-    }, 500);
   }, [trackId]);
   useEffect(() => {
     setHasUnsavedChanges(true);
