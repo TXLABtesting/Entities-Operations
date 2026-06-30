@@ -171,32 +171,32 @@ function getTrackCompletion(trackId: number): { percent: number; status: "empty"
 
     // Tracks 3 & 4 hide the operations/targets sections.
     const hasOpsSections = ![3, 4].includes(trackId);
+    // Ignore the auto-filled track reference (set just by opening the form).
+    const isAuto = (k: string, v: string) => (k === "track" || k === "relatedTrack") && v === trackName;
 
-    // Milestones (each ~ one "step" being meaningfully done)
-    const milestones: boolean[] = [];
-    // 1) Contact / identity
-    milestones.push(has(f.entity) && has(f.preparer) && has(f.email) && has(f.phone));
-    // 2) Projects & initiatives — at least one real row (ignore the auto-filled track name)
-    milestones.push((t.tblExisting || []).some((r) => Object.entries(r).some(([k, v]) => has(v) && !(k === "track" && v === trackName))));
-    if (hasOpsSections) {
-      // 3) Operations — at least one row with name + core assessment
-      milestones.push((t.tblOps || []).some((r) => has(r.taskName) && has(r.eligibility) && has(r.readiness)));
-      // 4) Targets & results
-      milestones.push((has(f.outcome1) || has(f.output1)) && has(f.aiModelsCount));
-    }
-    // 5) Timeline — at least one phase entry
+    // --- track-specific signals (shared contact info does NOT count) ---
+    const opsRows = t.tblOps || [];
+    const opsAny = opsRows.some((r) => has(r.taskName) || has(r.subActivities));
+    const opsDone = opsRows.some((r) => has(r.taskName) && has(r.eligibility) && has(r.readiness));
+    const projAny = (t.tblExisting || []).some((r) => Object.entries(r).some(([k, v]) => has(v) && !isAuto(k, v)));
     const phaseEntries = data.phaseEntries || {};
-    milestones.push(Object.values(phaseEntries).some((arr: any) => Array.isArray(arr) && arr.some((e: any) => has(e?.desc))));
+    const timelineAny = Object.values(phaseEntries).some((arr: any) => Array.isArray(arr) && arr.some((e: any) => has(e?.desc)));
+    const targetsAny = has(f.outcome1) || has(f.output1) || has(f.aiModelsCount);
+    const targetsDone = (has(f.outcome1) || has(f.output1)) && has(f.aiModelsCount);
 
+    // Completion milestones (applicable to this track)
+    const milestones: boolean[] = [projAny];
+    if (hasOpsSections) { milestones.push(opsDone, targetsDone); }
+    milestones.push(timelineAny);
     const done = milestones.filter(Boolean).length;
     const total = milestones.length;
 
-    // Any data at all? (otherwise empty)
-    const anyData = Object.values(f).some(has) || Object.values(t).some((rows) => rows.some((r) => Object.values(r).some(has)));
-    if (!anyData) return { percent: 0, status: "empty" };
+    // "Started" only when real track-specific content exists — not on open.
+    const started = opsAny || projAny || timelineAny || (hasOpsSections && targetsAny);
+    if (!started) return { percent: 0, status: "empty" };
 
+    if (done === total && total > 0) return { percent: 100, status: "completed" };
     const percent = Math.round((done / total) * 100);
-    if (done === total) return { percent: 100, status: "completed" };
     return { percent: Math.max(percent, 5), status: "in-progress" };
   } catch {
     return { percent: 0, status: "empty" };
@@ -249,25 +249,27 @@ export default function TracksList() {
         )}
       </div>
 
-      {/* Header — constrained to the cards' width */}
-      <div className="relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-10 xl:px-16 pt-5 pb-6">
-        {/* return (right) + logo (left) */}
-        <div className="flex items-center justify-between mb-6">
-          <Link href="/" className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all text-xs font-medium text-slate-500 hover:text-slate-700 hover:bg-slate-100">
-            <ArrowLeft className="w-3.5 h-3.5" />
-            رجوع
-          </Link>
-          <img alt="مشروع الذكاء الاصطناعي المساعد" className="h-10 sm:h-12 object-contain" src={AI_LOGO} />
-        </div>
+      {/* Logo — centered */}
+      <div className={`relative z-10 flex justify-center pt-6 pb-5 transition-all duration-700 ${loaded ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"}`}>
+        <img alt="مشروع الذكاء الاصطناعي المساعد" className="h-12 sm:h-16 object-contain" src={AI_LOGO} />
+      </div>
 
-        {/* title (right) + primary action beside it */}
-        <div className={`flex flex-wrap items-center gap-4 transition-all duration-700 ${loaded ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"}`}>
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#0a1628]">
-            مشروع الذكاء الاصطناعي المساعد
-          </h1>
+      {/* Header bar — within the cards' width */}
+      <div className="relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-10 xl:px-16 pb-6">
+        <div className={`flex items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-gradient-to-l from-slate-50 to-white shadow-[0_4px_18px_-10px_rgba(15,23,42,0.15)] px-5 sm:px-7 py-4 transition-all duration-700 delay-100 ${loaded ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-3"}`}>
+          {/* right: back arrow + title */}
+          <div className="flex items-center gap-3 min-w-0">
+            <Link href="/" title="رجوع" className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path d="M14 5l7 7-7 7M21 12H3" /></svg>
+            </Link>
+            <h1 className="text-lg sm:text-2xl font-bold tracking-tight text-[#0a1628] truncate">
+              مشروع الذكاء الاصطناعي المساعد
+            </h1>
+          </div>
+          {/* left: primary action */}
           <button
             onClick={() => setShowTeamReg(true)}
-            className="flex items-center gap-2.5 px-6 py-3 rounded-xl text-sm font-bold transition-all active:scale-[0.97] shadow-lg hover:shadow-xl hover:scale-[1.02] bg-blue-600 text-white hover:bg-blue-500 shadow-blue-500/25"
+            className="flex-shrink-0 flex items-center gap-2.5 px-5 sm:px-6 py-3 rounded-xl text-sm font-bold transition-all active:scale-[0.97] shadow-lg hover:shadow-xl bg-blue-600 text-white hover:bg-blue-500 shadow-blue-500/25"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
               <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
@@ -275,7 +277,8 @@ export default function TracksList() {
               <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
               <path d="M16 3.13a4 4 0 0 1 0 7.75" />
             </svg>
-            تسجيل فرق العمل
+            <span className="hidden sm:inline">تسجيل فرق العمل</span>
+            <span className="sm:hidden">الفرق</span>
           </button>
         </div>
       </div>

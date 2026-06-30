@@ -491,12 +491,9 @@ export default function WorkPlan() {
   const [formState, setFormState] = useState<FormState>(() => loadState(trackId));
   const [toastMsg, setToastMsg] = useState("");
   const [readinessOpen, setReadinessOpen] = useState(false);
-  // Entry path: choose between manual form and bulk upload (skip if data exists)
-  const [entryChoice, setEntryChoice] = useState<"choose" | "manual" | "bulk">(() => {
-    const init = loadState(trackId);
-    const hasData = (init.tables.tblOps || []).some((r) => r.taskName && r.taskName.trim()) || !!(init.fields.entity && init.fields.entity.trim());
-    return hasData ? "manual" : "choose";
-  });
+  // Entry path: always show the chooser first (bulk vs manual) when entering a
+  // track; the choice then routes to the right flow.
+  const [entryChoice, setEntryChoice] = useState<"choose" | "manual" | "bulk">("choose");
   const [validationErrors, setValidationErrors] = useState<{ [key: string]: string }>({});
   const [autoSaveStatus, setAutoSaveStatus] = useState<"idle" | "saving" | "saved">("idle");
   const [lastSavedTime, setLastSavedTime] = useState<string>("");
@@ -2089,7 +2086,7 @@ export default function WorkPlan() {
 
           </div>
           <div className="flex gap-1.5 sm:gap-2 flex-wrap items-center">
-            <button onClick={handleSave} className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2.5 sm:py-2 bg-blue-50 border border-blue-200 text-blue-700 rounded-lg text-xs sm:text-xs font-bold hover:bg-blue-100 transition-all active:scale-[0.97]">
+            <button onClick={handleSave} className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2.5 sm:py-2 bg-blue-600 border border-blue-600 text-white rounded-lg text-xs sm:text-xs font-bold hover:bg-blue-500 transition-all active:scale-[0.97] shadow-sm shadow-blue-500/20">
               <svg className="w-4 h-4 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path d="M5 13l4 4L19 7" /></svg>
               حفظ
             </button>
@@ -2103,19 +2100,19 @@ export default function WorkPlan() {
                 )}
               </span>
             )}
-            <button onClick={() => exportToExcel(formState, trackId)} className={`inline-flex items-center gap-1.5 px-3 sm:px-3 py-2.5 sm:py-2 rounded-lg text-xs sm:text-xs font-medium transition-all active:scale-[0.97] ${"bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 hover:text-slate-900"}`}>
+            <button onClick={() => exportToExcel(formState, trackId)} className={`inline-flex items-center gap-1.5 px-3 sm:px-3 py-2.5 sm:py-2 rounded-lg text-xs sm:text-xs font-semibold transition-all active:scale-[0.97] ${"bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900"}`}>
               <svg className="w-4 h-4 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
               <span className="hidden sm:inline">Excel</span>
             </button>
-            <button onClick={() => exportToPptx(formState, trackId)} className={`inline-flex items-center gap-1.5 px-3 sm:px-3 py-2.5 sm:py-2 rounded-lg text-xs sm:text-xs font-medium transition-all active:scale-[0.97] ${"bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 hover:text-slate-900"}`}>
+            <button onClick={() => exportToPptx(formState, trackId)} className={`inline-flex items-center gap-1.5 px-3 sm:px-3 py-2.5 sm:py-2 rounded-lg text-xs sm:text-xs font-semibold transition-all active:scale-[0.97] ${"bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900"}`}>
               <svg className="w-4 h-4 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
               <span className="hidden sm:inline">PowerPoint</span>
             </button>
-            <button onClick={handleReset} className={`inline-flex items-center gap-1.5 px-3 sm:px-3 py-2.5 sm:py-2 rounded-lg text-xs sm:text-xs font-medium transition-all active:scale-[0.97] ${"bg-red-50 border border-red-200 text-red-600 hover:bg-red-100 hover:text-red-700"}`}>
+            <button onClick={handleReset} className={`inline-flex items-center gap-1.5 px-3 sm:px-3 py-2.5 sm:py-2 rounded-lg text-xs sm:text-xs font-semibold transition-all active:scale-[0.97] ${"bg-white border border-slate-200 text-slate-500 hover:text-red-600 hover:bg-red-50 hover:border-red-200"}`}>
               <svg className="w-4 h-4 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
               <span className="hidden sm:inline">مسح</span>
             </button>
-            <button onClick={() => window.print()} className={`inline-flex items-center gap-1.5 px-3 sm:px-3 py-2.5 sm:py-2 rounded-lg text-xs sm:text-xs font-medium transition-all active:scale-[0.97] ${"bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 hover:text-slate-900"}`}>
+            <button onClick={() => window.print()} className={`inline-flex items-center gap-1.5 px-3 sm:px-3 py-2.5 sm:py-2 rounded-lg text-xs sm:text-xs font-semibold transition-all active:scale-[0.97] ${"bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900"}`}>
               <svg className="w-4 h-4 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
               <span className="hidden sm:inline">طباعة</span>
             </button>
